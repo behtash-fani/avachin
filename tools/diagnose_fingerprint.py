@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Diagnose AcoustID fingerprint recognition for one audio file.
+"""Diagnose audio recognition for one audio file.
 
-This tool does not rename, move, or modify files. It only shows whether the
-current Avachin setup can fingerprint a problematic unknown track and whether
-AcoustID/MusicBrainz returns a usable candidate.
+This tool does not rename, move, or modify files. It shows whether Avachin can
+fingerprint a problematic unknown track and whether AcoustID or optional audio
+recognition fallbacks return a usable candidate.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ def _print_tags(audio: Any) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Check one file with Avachin AcoustID recognition.")
+    parser = argparse.ArgumentParser(description="Check one file with Avachin audio recognition.")
     parser.add_argument("--file", type=Path, help="Path to one MP3 file")
     args = parser.parse_args()
 
@@ -75,13 +75,17 @@ def main() -> int:
     client.enable_acoustid_provider = app.provider_enabled(config, "acoustid", True)
 
     fpcalc_path = app.find_fpcalc(PROJECT_ROOT)
-    api_key = str(config.get("acoustid_api_key") or "").strip()
+    acoustid_key = str(config.get("acoustid_api_key") or "").strip()
+    audd_key = str(config.get("audd_api_token") or "").strip()
+    audd_on = app.provider_enabled(config, "audd", False)
 
-    print(f"Avachin fingerprint diagnostic")
+    print("Avachin fingerprint diagnostic")
     print(f"File: {source}")
     print(f"fpcalc: {fpcalc_path if fpcalc_path else 'NOT FOUND'}")
-    print(f"AcoustID key: {'FOUND' if api_key else 'NOT FOUND'}")
+    print(f"AcoustID key: {'FOUND' if acoustid_key else 'NOT FOUND'}")
     print(f"AcoustID provider: {'ON' if client.enable_acoustid_provider else 'OFF'}")
+    print(f"AudD token: {'FOUND' if audd_key else 'NOT FOUND'}")
+    print(f"AudD fallback: {'ON' if audd_on else 'OFF'}")
     print()
 
     audio = app.read_mp3(source)
@@ -91,15 +95,17 @@ def main() -> int:
     if fpcalc_path is None:
         print("Result: fingerprint check cannot run because fpcalc was not found.")
         return 2
-    if not api_key:
-        print("Result: fingerprint check cannot run because AcoustID key is not active.")
-        print("Run: .\\scripts\\windows\\set_acoustid_key.bat")
+    if not acoustid_key and not audd_key:
+        print("Result: no audio recognition key is active.")
+        print("Run one of these:")
+        print("  .\\scripts\\windows\\set_acoustid_key.bat")
+        print("  .\\scripts\\windows\\set_audd_key.bat")
         return 2
-    if not client.enable_acoustid_provider:
-        print("Result: fingerprint check cannot run because online_providers.acoustid is OFF.")
+    if not client.enable_acoustid_provider and not audd_on:
+        print("Result: all audio recognition providers are OFF.")
         return 2
 
-    print("Running fpcalc + AcoustID lookup...")
+    print("Running fpcalc + AcoustID lookup, then optional fallbacks...")
     candidate, errors = app.identify_by_fingerprint(source, fpcalc_path, client, config)
     cache.close()
 
@@ -110,8 +116,8 @@ def main() -> int:
         print()
 
     if candidate is None:
-        print("Result: no trusted AcoustID candidate was returned.")
-        print("This usually means the recording is not covered by AcoustID/MusicBrainz, or the score is below the trust threshold.")
+        print("Result: no trusted audio-recognition candidate was returned.")
+        print("AcoustID may not cover this recording. Add an AudD token or ACRCloud fallback for broader recognition.")
         return 1
 
     print("Result: MATCH")
@@ -122,6 +128,7 @@ def main() -> int:
     print(f"  album: {_safe(candidate.album)}")
     print(f"  musicbrainz_recording_id: {_safe(candidate.musicbrainz_recording_id)}")
     print(f"  fingerprint_score: {_safe(candidate.evidence.get('fingerprint_score'))}")
+    print(f"  audd_song_link: {_safe(candidate.evidence.get('audd_song_link'))}")
     return 0
 
 
