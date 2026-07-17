@@ -1,0 +1,38 @@
+name: Local-first tests
+
+on:
+  push:
+    branches:
+      - main
+      - "agent/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  local-first-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Compile changed Python files
+        run: |
+          python -m py_compile tools/avachin_launcher.py
+          python -m py_compile tools/avachin_local_first_launcher.py
+          python -m py_compile tests/test_local_first_launcher.py
+
+      - name: Run local-first regression tests
+        run: python tests/test_local_first_launcher.py
