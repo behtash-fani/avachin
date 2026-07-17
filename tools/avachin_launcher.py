@@ -42,7 +42,9 @@ def _merge_config_file(config: dict[str, Any], path: Path) -> None:
     if not path.exists():
         return
     try:
-        loaded = json.loads(path.read_text(encoding="utf-8"))
+        # Windows PowerShell 5.1 writes UTF-8 files with a BOM by default.
+        # utf-8-sig keeps config.local.json readable even when created by .bat.
+        loaded = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return
     if isinstance(loaded, dict):
