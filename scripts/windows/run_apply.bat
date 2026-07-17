@@ -15,7 +15,7 @@ if not exist "config.json" (
 )
 
 echo.
-echo Smart Music Organizer v8 - SAFE APPLY MODE
+echo Avachin v11.4 - SAFE APPLY MODE
 echo Select the ROOT of your complete music library.
 echo.
 echo The program will:
@@ -24,13 +24,13 @@ echo   2. Build the final Artist\Album structure
 echo   3. Use crash-safe transactions and a live journal
 echo   4. Keep cover/lyrics/cue/playlist sidecars with albums
 echo   5. Create a complete undo manifest outside the library
+echo   6. Use AcoustID fingerprint recognition when ACOUSTID_API_KEY is set
 echo.
 echo No per-file confirmation will be requested.
 echo.
-py smart_music_organizer.py --apply
+py tools\avachin_launcher.py --apply
 set EXIT_CODE=%ERRORLEVEL%
 echo.
 if not "%EXIT_CODE%"=="0" echo Finished with exit code %EXIT_CODE%.
 pause
 exit /b %EXIT_CODE%
-
