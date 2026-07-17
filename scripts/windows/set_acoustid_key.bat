@@ -16,7 +16,7 @@ if "%KEY%"=="" (
 setx ACOUSTID_API_KEY "%KEY%" >nul
 set "ACOUSTID_API_KEY=%KEY%"
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$payload = [ordered]@{ acoustid_api_key = $env:KEY; acoustid_api_key_env = 'ACOUSTID_API_KEY'; online_providers = [ordered]@{ acoustid = $true }; fingerprint_identification_enabled = $true; fingerprint_when_uncertain = $true; fingerprint_min_score = 0.72 }; $payload | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath 'config.local.json' -Encoding UTF8"
+py -c "import json; payload={'acoustid_api_key':'%KEY%','acoustid_api_key_env':'ACOUSTID_API_KEY','online_providers':{'acoustid':True},'fingerprint_identification_enabled':True,'fingerprint_when_uncertain':True,'fingerprint_min_score':0.72}; open('config.local.json','w',encoding='utf-8').write(json.dumps(payload, ensure_ascii=False, indent=2))"
 if errorlevel 1 (
   echo Could not write config.local.json.
   exit /b 1
