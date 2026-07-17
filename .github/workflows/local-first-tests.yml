@@ -1,4 +1,4 @@
-name: Local-first tests
+name: Avachin core tests
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  local-first-unit-tests:
+  avachin-core-unit-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -34,13 +34,17 @@ jobs:
           python -m py_compile tools/avachin_local_first_launcher.py
           python -m py_compile tools/create_unknown_test_copy.py
           python -m py_compile tools/diagnose_local_first_file.py
+          python -m py_compile tools/fingerprint_store_v2.py
+          python -m py_compile tools/local_fingerprint_library.py
           python -m py_compile tools/summarize_preview_fingerprints.py
           python -m py_compile tests/test_create_unknown_test_copy.py
+          python -m py_compile tests/test_fingerprint_schema_v2.py
           python -m py_compile tests/test_local_first_launcher.py
           python -m py_compile tests/test_preview_fingerprint_summary.py
 
-      - name: Run local-first regression tests
+      - name: Run regression tests
         run: |
           python tests/test_create_unknown_test_copy.py
+          python tests/test_fingerprint_schema_v2.py
           python tests/test_local_first_launcher.py
           python tests/test_preview_fingerprint_summary.py
