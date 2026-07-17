@@ -24,7 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import smart_music_organizer as app
 
 
-LAUNCHER_VERSION = "11.5"
+LAUNCHER_VERSION = "11.6"
 AUDD_RECOGNIZE_URL = "https://api.audd.io/"
 
 
@@ -55,6 +55,10 @@ def _merge_config_file(config: dict[str, Any], path: Path) -> None:
 
 
 def _apply_private_overrides(config: dict[str, Any]) -> None:
+    config.setdefault("local_fingerprint_library_enabled", True)
+    config.setdefault("local_fingerprint_match_threshold", 86.0)
+    config.setdefault("local_fingerprint_duration_tolerance_seconds", 8.0)
+
     acoustid_env = str(config.get("acoustid_api_key_env") or "ACOUSTID_API_KEY")
     acoustid_key = _first_env_value(
         acoustid_env,
@@ -324,6 +328,72 @@ def _audd_candidate(result: dict[str, Any]) -> app.Candidate | None:
     )
 
 
+def _local_fingerprint_candidate(match: dict[str, Any]) -> app.Candidate | None:
+    title = str(match.get("title") or "").strip()
+    artist = str(match.get("artist") or "").strip()
+    if not title or not artist:
+        return None
+    album = str(match.get("album") or "").strip() or None
+    confidence = min(99.0, max(0.0, float(match.get("score") or 0.0)))
+    duration_seconds = match.get("query_duration_seconds") or match.get("duration_seconds")
+    try:
+        duration_ms = int(float(duration_seconds) * 1000) if duration_seconds else None
+    except (TypeError, ValueError):
+        duration_ms = None
+
+    return app.Candidate(
+        source="local_fingerprint",
+        title=title,
+        artist=artist,
+        album=album,
+        album_artist=artist,
+        duration_ms=duration_ms,
+        confidence=confidence,
+        title_similarity=100.0,
+        artist_similarity=100.0,
+        duration_similarity=float(match.get("duration_score") or 0.0),
+        consensus_sources=["local_fingerprint"],
+        evidence={
+            "local_fingerprint_id": match.get("id"),
+            "local_fingerprint_score": match.get("fingerprint_score"),
+            "local_fingerprint_duration_diff_seconds": match.get("duration_diff_seconds"),
+            "local_fingerprint_source_path": match.get("source_path"),
+            "track_artist_entities": [artist],
+            "track_artist_keys": ["local_fingerprint"],
+            "track_artist_atomic": True,
+            "album_artist_entities": [artist],
+            "album_artist_keys": ["local_fingerprint"],
+            "album_artist_atomic": True,
+        },
+    )
+
+
+def _identify_by_local_fingerprint(
+    path: Path,
+    fpcalc_path: Any,
+    config: dict[str, Any],
+) -> tuple[app.Candidate | None, list[str]]:
+    if not bool(config.get("local_fingerprint_library_enabled", True)):
+        return None, []
+    try:
+        import tools.local_fingerprint_library as local_fp
+
+        match = local_fp.match_file(
+            path,
+            threshold=float(config.get("local_fingerprint_match_threshold", 86.0) or 86.0),
+            duration_tolerance_seconds=float(config.get("local_fingerprint_duration_tolerance_seconds", 8.0) or 8.0),
+            fpcalc_path=Path(fpcalc_path) if fpcalc_path else None,
+        )
+        if not match:
+            return None, []
+        candidate = _local_fingerprint_candidate(match)
+        return candidate, []
+    except FileNotFoundError:
+        return None, []
+    except Exception as exc:
+        return None, [f"Local fingerprint: {exc}"]
+
+
 def _identify_by_audd(path: Path, config: dict[str, Any]) -> tuple[app.Candidate | None, list[str]]:
     if not bool(config.get("audio_recognition_fallbacks_enabled", True)):
         return None, []
@@ -385,7 +455,15 @@ def _identify_with_audio_fallbacks(
     client: Any,
     config: dict[str, Any],
 ) -> tuple[app.Candidate | None, list[str]]:
-    candidate, errors = _ORIGINAL_IDENTIFY_BY_FINGERPRINT(path, fpcalc_path, client, config)
+    errors: list[str] = []
+
+    local_candidate, local_errors = _identify_by_local_fingerprint(path, fpcalc_path, config)
+    errors.extend(local_errors)
+    if local_candidate is not None:
+        return local_candidate, errors
+
+    candidate, online_errors = _ORIGINAL_IDENTIFY_BY_FINGERPRINT(path, fpcalc_path, client, config)
+    errors.extend(online_errors)
     if candidate is not None:
         return candidate, errors
 
