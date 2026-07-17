@@ -14,9 +14,16 @@ if "%KEY%"=="" (
 )
 
 setx ACOUSTID_API_KEY "%KEY%" >nul
+set "ACOUSTID_API_KEY=%KEY%"
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$payload = [ordered]@{ acoustid_api_key = $env:KEY; acoustid_api_key_env = 'ACOUSTID_API_KEY'; online_providers = [ordered]@{ acoustid = $true }; fingerprint_identification_enabled = $true; fingerprint_when_uncertain = $true; fingerprint_min_score = 0.72 }; $payload | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath 'config.local.json' -Encoding UTF8"
+if errorlevel 1 (
+  echo Could not write config.local.json.
+  exit /b 1
+)
 
 echo.
-echo AcoustID key was saved to your Windows user environment as ACOUSTID_API_KEY.
-echo Restart PowerShell or Command Prompt before running Avachin.
+echo AcoustID key is now active for Avachin.
+echo It was saved to your Windows user environment and to ignored local file config.local.json.
 echo No API key was written into Git-tracked files.
 endlocal
