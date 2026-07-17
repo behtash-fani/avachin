@@ -100,25 +100,14 @@ def _candidate_identity_is_valid(candidate: Any) -> bool:
 
 
 def input_identity_is_uncertain(source: Path, audio: Any) -> bool:
+    """Trust complete valid tags even when the physical filename is poor."""
+    del source  # Filename hints must not override a complete reliable tag pair.
     tags = getattr(audio, "tags", None)
     tag_title = getattr(tags, "title", "") if tags is not None else ""
     tag_artist = ""
     if tags is not None:
         tag_artist = getattr(tags, "artist", "") or getattr(tags, "albumartist", "")
-
-    if _is_placeholder(tag_title) or _is_placeholder(tag_artist):
-        return True
-
-    path_text = _key(source)
-    return any(
-        marker in path_text
-        for marker in (
-            "unknown artist",
-            "unknown title",
-            "untitled",
-            "_unknown artist",
-        )
-    )
+    return _is_placeholder(tag_title) or _is_placeholder(tag_artist)
 
 
 def _online_consensus_sources(candidate: Any) -> set[str]:
