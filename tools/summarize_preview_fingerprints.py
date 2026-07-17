@@ -4,7 +4,8 @@
 
 The organizer intentionally samples console progress for large libraries. This
 helper reads report.csv so local fingerprint acceptance can be verified without
-running the full preview a second time.
+running the full preview a second time. It also prints every report row matching
+``--contains`` so a failed acoustic lookup is not hidden behind a zero count.
 """
 
 from __future__ import annotations
@@ -87,6 +88,8 @@ def print_rows(rows: list[dict[str, str]]) -> None:
         )
         print(f"    source: {row.get('source_path') or '-'}")
         print(f"    target: {row.get('final_path') or row.get('new_filename') or '-'}")
+        if row.get("error"):
+            print(f"    error: {row['error']}")
 
 
 def main() -> int:
@@ -106,16 +109,24 @@ def main() -> int:
         return 2
 
     rows = read_rows(report_path)
-    local_rows = filter_rows(rows, source="local_fingerprint", contains=args.contains)
+    matching_rows = filter_rows(rows, contains=args.contains)
+    local_rows = [
+        row for row in matching_rows
+        if normalized(row.get("match_source")) == "local_fingerprint"
+    ]
     acoustic_rows = [
-        row for row in filter_rows(rows, contains=args.contains)
+        row for row in matching_rows
         if normalized(row.get("match_source")) in ACOUSTIC_SOURCES
     ]
 
     print(f"Preview report: {report_path}")
     print(f"Rows: {len(rows)}")
+    print(f"Matching report rows: {len(matching_rows)}")
     print(f"Local fingerprint matches: {len(local_rows)}")
     print(f"All acoustic matches: {len(acoustic_rows)}")
+    print()
+    print("Matching report details:")
+    print_rows(matching_rows)
     print()
     print("Local fingerprint details:")
     print_rows(local_rows)
