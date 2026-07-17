@@ -24,7 +24,8 @@ if str(PROJECT_ROOT) not in sys.path:
 import smart_music_organizer as app
 
 
-LAUNCHER_VERSION = "11.4.2"
+LAUNCHER_VERSION = "11.5"
+AUDD_RECOGNIZE_URL = "https://api.audd.io/"
 
 
 def _first_env_value(*names: str) -> str:
@@ -67,6 +68,19 @@ def _apply_private_overrides(config: dict[str, Any]) -> None:
         providers = config.setdefault("online_providers", {})
         if isinstance(providers, dict):
             providers["acoustid"] = True
+
+    audd_env = str(config.get("audd_api_token_env") or "AUDD_API_TOKEN")
+    audd_token = _first_env_value(
+        audd_env,
+        "AUDD_API_TOKEN",
+        "AVACHIN_AUDD_API_TOKEN",
+    )
+    if audd_token:
+        config["audd_api_token"] = audd_token
+        config["audio_recognition_fallbacks_enabled"] = True
+        providers = config.setdefault("online_providers", {})
+        if isinstance(providers, dict):
+            providers["audd"] = True
 
     spotify_client_id = _first_env_value(
         "SPOTIFY_CLIENT_ID",
@@ -113,20 +127,14 @@ def _acoustid_lookup_post(
     duration: int,
     fingerprint: str,
 ) -> dict[str, Any]:
-    """Use compressed POST for AcoustID lookup.
-
-    AcoustID supports GET and POST, but long Chromaprint fingerprints should be
-    sent by POST. The API's multi-value ``meta`` parameter also expects values as
-    whitespace-separated tokens; using literal plus signs can be encoded as
-    ``%2B`` and rejected as a bad request.
-    """
+    """Use compressed POST for AcoustID lookup."""
     fingerprint_text = str(fingerprint or "")
     params = {
         "client": str(api_key or "").strip(),
         "duration": str(int(duration)),
         "fingerprint": fingerprint_text,
         # Important: spaces are intentional. urllib encodes them as '+', which
-        # is what AcoustID expects for multiple meta tokens in form data.
+        # AcoustID expects for multiple meta tokens in form data.
         "meta": "recordings releasegroups releases tracks compress",
         "format": "json",
     }
@@ -167,8 +175,6 @@ def _acoustid_lookup_post(
                 timeout=self.timeout,
             )
 
-            # Retry transient server/rate-limit failures. Do not retry 400s; the
-            # response body tells us whether the client key or parameters are bad.
             if response.status_code in {429, 500, 502, 503, 504}:
                 if attempt + 1 >= 3:
                     response.raise_for_status()
@@ -205,6 +211,193 @@ def _acoustid_lookup_post(
     raise RuntimeError(f"AcoustID POST request failed: {last_error}")
 
 
+def _audd_token(config: dict[str, Any]) -> str:
+    return str(config.get("audd_api_token") or "").strip()
+
+
+def _audd_cache_key(path: Path, token: str) -> str:
+    try:
+        audio_sha = app.hash_file(path)
+    except Exception:
+        audio_sha = app.quick_hash_file(path)
+    token_sha = app.hashlib.sha256(token.encode("utf-8", "ignore")).hexdigest()[:16]
+    stable = json.dumps(
+        {
+            "provider": "audd",
+            "audio_sha256": audio_sha,
+            "token_sha256_prefix": token_sha,
+            "api": AUDD_RECOGNIZE_URL,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return "audd:" + app.hashlib.sha256(stable.encode("utf-8")).hexdigest()
+
+
+def _safe_audd_error(payload: Any) -> str:
+    if isinstance(payload, dict):
+        error = payload.get("error") or payload.get("status") or payload
+        if isinstance(error, dict):
+            code = str(error.get("error_code") or error.get("code") or "").strip()
+            message = str(error.get("error_message") or error.get("message") or "").strip()
+            return " - ".join(part for part in (code, message) if part) or str(error)
+        return str(error)
+    return str(payload)
+
+
+def _audd_candidate(result: dict[str, Any]) -> app.Candidate | None:
+    title = str(result.get("title") or "").strip()
+    artist = str(result.get("artist") or "").strip()
+    if not title or not artist:
+        return None
+
+    spotify = result.get("spotify") if isinstance(result.get("spotify"), dict) else {}
+    apple_music = result.get("apple_music") if isinstance(result.get("apple_music"), dict) else {}
+    album = (
+        str(result.get("album") or "").strip()
+        or str((spotify.get("album") or {}).get("name") or "").strip()
+        or str(apple_music.get("collectionName") or "").strip()
+        or None
+    )
+    date = (
+        str(result.get("release_date") or "").strip()
+        or str((spotify.get("album") or {}).get("release_date") or "").strip()
+        or str(apple_music.get("releaseDate") or "").split("T", 1)[0].strip()
+        or None
+    )
+    isrc = None
+    external_ids = spotify.get("external_ids") if isinstance(spotify.get("external_ids"), dict) else {}
+    if external_ids:
+        isrc = external_ids.get("isrc")
+    if not isrc:
+        isrc = apple_music.get("isrc")
+
+    duration_ms = None
+    raw_duration = spotify.get("duration_ms") or apple_music.get("trackTimeMillis")
+    try:
+        if raw_duration is not None:
+            duration_ms = int(raw_duration)
+    except (TypeError, ValueError):
+        duration_ms = None
+
+    spotify_track_id = str(spotify.get("id") or "").strip() or None
+    apple_track_id = str(apple_music.get("trackId") or "").strip() or None
+    spotify_artists = spotify.get("artists") if isinstance(spotify.get("artists"), list) else []
+    artist_entities = [
+        str(item.get("name") or "").strip()
+        for item in spotify_artists
+        if isinstance(item, dict) and str(item.get("name") or "").strip()
+    ] or [artist]
+    artist_keys = [
+        f"spotify:{item.get('id')}" if isinstance(item, dict) and item.get("id") else ""
+        for item in spotify_artists
+        if isinstance(item, dict) and str(item.get("name") or "").strip()
+    ] or [""]
+
+    return app.Candidate(
+        source="audd",
+        title=title,
+        artist=artist,
+        album=album,
+        album_artist=artist,
+        date=date,
+        isrc=isrc,
+        duration_ms=duration_ms,
+        spotify_track_id=spotify_track_id,
+        apple_track_id=apple_track_id,
+        confidence=96.0,
+        title_similarity=100.0,
+        artist_similarity=100.0,
+        duration_similarity=90.0 if duration_ms else 55.0,
+        consensus_sources=["audd"],
+        evidence={
+            "audd_song_link": result.get("song_link"),
+            "audd_provider": True,
+            "track_artist_entities": artist_entities,
+            "track_artist_keys": artist_keys,
+            "track_artist_atomic": len(artist_entities) == 1,
+            "album_artist_entities": [artist],
+            "album_artist_keys": [artist_keys[0] if len(artist_keys) == 1 else ""],
+            "album_artist_atomic": True,
+            "exact_isrc": bool(isrc),
+        },
+    )
+
+
+def _identify_by_audd(path: Path, config: dict[str, Any]) -> tuple[app.Candidate | None, list[str]]:
+    if not bool(config.get("audio_recognition_fallbacks_enabled", True)):
+        return None, []
+    if not app.provider_enabled(config, "audd", False):
+        return None, []
+    token = _audd_token(config)
+    if not token:
+        return None, []
+
+    cache_path = app.app_data_dir() / "catalog_cache.sqlite3"
+    cache = app.Cache(cache_path)
+    cache_key = _audd_cache_key(path, token)
+    cached = cache.get(cache_key, int(config.get("audd_cache_days", 30) or 30))
+    if isinstance(cached, dict):
+        result = cached.get("result") if isinstance(cached.get("result"), dict) else None
+        cache.close()
+        return (_audd_candidate(result) if result else None), []
+
+    try:
+        with path.open("rb") as handle:
+            response = app.requests.post(
+                AUDD_RECOGNIZE_URL,
+                data={
+                    "api_token": token,
+                    "return": "apple_music,spotify",
+                },
+                files={"file": (path.name, handle, "audio/mpeg")},
+                timeout=float(config.get("audd_request_timeout_seconds", 45) or 45),
+            )
+        try:
+            payload = response.json()
+        except ValueError:
+            response.raise_for_status()
+            return None, ["AudD: non-JSON response"]
+        if response.status_code >= 400:
+            return None, [f"AudD: HTTP {response.status_code}: {_safe_audd_error(payload)}"]
+        if not isinstance(payload, dict):
+            return None, ["AudD: invalid response object"]
+        if str(payload.get("status") or "").lower() != "success":
+            return None, [f"AudD: {_safe_audd_error(payload)}"]
+        result = payload.get("result")
+        if not isinstance(result, dict):
+            cache.set(cache_key, {"result": None})
+            return None, []
+        cache.set(cache_key, {"result": result})
+        return _audd_candidate(result), []
+    except Exception as exc:
+        return None, [f"AudD: {exc}"]
+    finally:
+        try:
+            cache.close()
+        except Exception:
+            pass
+
+
+def _identify_with_audio_fallbacks(
+    path: Path,
+    fpcalc_path: Any,
+    client: Any,
+    config: dict[str, Any],
+) -> tuple[app.Candidate | None, list[str]]:
+    candidate, errors = _ORIGINAL_IDENTIFY_BY_FINGERPRINT(path, fpcalc_path, client, config)
+    if candidate is not None:
+        return candidate, errors
+
+    audd_candidate, audd_errors = _identify_by_audd(path, config)
+    errors.extend(audd_errors)
+    if audd_candidate is not None:
+        audd_candidate.evidence["replaced_candidate_source"] = "acoustid-none"
+        return audd_candidate, errors
+
+    return None, errors
+
+
 def _patched_load_config(script_dir: Path) -> dict[str, Any]:
     config = _ORIGINAL_LOAD_CONFIG(script_dir)
     _merge_config_file(config, script_dir / "config.local.json")
@@ -213,9 +406,11 @@ def _patched_load_config(script_dir: Path) -> dict[str, Any]:
 
 
 _ORIGINAL_LOAD_CONFIG = app.load_config
+_ORIGINAL_IDENTIFY_BY_FINGERPRINT = app.identify_by_fingerprint
 app.APP_VERSION = LAUNCHER_VERSION
 app.load_config = _patched_load_config
 app.CatalogClient.acoustid_lookup = _acoustid_lookup_post
+app.identify_by_fingerprint = _identify_with_audio_fallbacks
 
 
 if __name__ == "__main__":
