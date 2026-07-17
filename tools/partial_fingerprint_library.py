@@ -70,7 +70,7 @@ def main() -> int:
         print(f"  album: {result['album'] or '-'}")
         print(f"  query_duration_seconds: {result['query_duration_seconds']}")
         print(
-            "  matched_segment_seconds: "
+            "  best_reference_segment_seconds: "
             f"{result['segment_start_seconds']} - {result['segment_end_seconds']}"
         )
         print(f"  runner_up_margin: {result['runner_up_margin']}")
