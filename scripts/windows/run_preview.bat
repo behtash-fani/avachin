@@ -15,15 +15,15 @@ if not exist "config.json" (
 )
 
 echo.
-echo Smart Music Organizer v8 - PREVIEW MODE
+echo Avachin v11.4 - PREVIEW MODE
 echo Select the ROOT of your complete music library.
 echo.
 echo This run performs identification and planning, then writes a report.
+echo AcoustID fingerprint recognition is used when ACOUSTID_API_KEY is set.
 echo No file will be changed.
 echo.
-py smart_music_organizer.py
+py tools\avachin_launcher.py
 set EXIT_CODE=%ERRORLEVEL%
 echo.
 pause
 exit /b %EXIT_CODE%
-
