@@ -15,21 +15,22 @@ if not exist "config.json" (
 )
 
 echo.
-echo Avachin v11.7 - LOCAL-FIRST SAFE APPLY MODE
+echo Avachin v11.8 - LOCAL-FIRST SELF-LEARNING SAFE APPLY
 echo Select the ROOT of your complete music library.
 echo.
 echo The program will:
 echo   1. Check the local fingerprint database before every online provider
-echo   2. Identify all tracks first
-echo   3. Build the final Artist\Album structure
-echo   4. Use crash-safe transactions and a live journal
-echo   5. Keep cover/lyrics/cue/playlist sidecars with albums
-echo   6. Create a complete undo manifest outside the library
-echo   7. Use AcoustID and AudD only for tracks still unknown locally
+echo   2. Save trusted online results for uncertain files into the local database
+echo   3. Identify all tracks first
+echo   4. Build the final Artist\Album structure
+echo   5. Use crash-safe transactions and a live journal
+echo   6. Keep cover/lyrics/cue/playlist sidecars with albums
+echo   7. Create a complete undo manifest outside the library
+echo   8. Use AcoustID and AudD only for tracks still unknown locally
 echo.
 echo No per-file confirmation will be requested.
 echo.
-py tools\avachin_local_first_launcher.py --apply
+py tools\avachin_online_auto_learn_launcher.py --apply
 set EXIT_CODE=%ERRORLEVEL%
 echo.
 if not "%EXIT_CODE%"=="0" echo Finished with exit code %EXIT_CODE%.
