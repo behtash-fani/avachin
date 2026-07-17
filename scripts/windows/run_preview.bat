@@ -25,6 +25,15 @@ echo No file will be changed.
 echo.
 py tools\avachin_local_first_launcher.py
 set EXIT_CODE=%ERRORLEVEL%
+
 echo.
+if "%EXIT_CODE%"=="0" (
+    echo ============================================================
+    echo Local fingerprint summary from the latest preview report
+    echo ============================================================
+    py tools\summarize_preview_fingerprints.py
+    echo.
+)
+
 pause
 exit /b %EXIT_CODE%
