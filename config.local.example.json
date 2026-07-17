@@ -1,4 +1,7 @@
 {
+  "local_fingerprint_library_enabled": true,
+  "local_fingerprint_match_threshold": 86.0,
+  "local_fingerprint_duration_tolerance_seconds": 8.0,
   "acoustid_api_key": "",
   "acoustid_api_key_env": "ACOUSTID_API_KEY",
   "audd_api_token": "",
