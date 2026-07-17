@@ -2,7 +2,7 @@
 chcp 65001 >nul
 setlocal
 set PYTHONUTF8=1
-cd /d "%~dp0"
+cd /d "%~dp0..\.."
 
 set "MANIFEST=%~1"
 if "%MANIFEST%"=="" (
@@ -16,3 +16,4 @@ set EXIT_CODE=%ERRORLEVEL%
 echo.
 pause
 exit /b %EXIT_CODE%
+

@@ -6,3 +6,4 @@ if defined LOCALAPPDATA (
     echo Reports are stored in the SmartMusicOrganizer application data folder.
     pause
 )
+
