@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "description": "Small starter international artist registry. Users can expand this file or add more JSON files in config.json.",
+  "artists": [
+    {
+      "id": "intl.apocalyptica",
+      "canonical_name": "Apocalyptica",
+      "preferred_folder_name": "Apocalyptica",
+      "roles": ["artist", "band", "performer"],
+      "aliases": ["Apocalyptica", "apocalyptica"],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "intl.vanotek",
+      "canonical_name": "Vanotek",
+      "preferred_folder_name": "Vanotek",
+      "roles": ["artist", "producer", "performer"],
+      "aliases": ["Vanotek", "vanotek"],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    }
+  ]
+}

@@ -1,0 +1,1745 @@
+{
+  "version": 3,
+  "description": "Iranian track fallback registry. This update focuses on trusted album/single anchors for common Persian artists and avoids turning every single into an album folder. Update: Chaartaar album alias canonicalization for Darya Kojaast and Jaade Miraghsad.",
+  "tracks": [
+    {
+      "id": "ir.chaartaar.ashoobam",
+      "canonical_title": "Ashoobam",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Ashoobam",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Ashoobam",
+          "artist": "چارتار"
+        },
+        {
+          "title": "آشوبم",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "آشوبم",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.maraa-be-khaaterat-negah-daar",
+      "canonical_title": "Maraa Be Khaaterat Negah Daar",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Maraa Be Khaaterat Negah Daar",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Maraa Be Khaaterat Negah Daar",
+          "artist": "چارتار"
+        },
+        {
+          "title": "مرا به خاطرت نگه‌دار",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "مرا به خاطرت نگه‌دار",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.hendeseh",
+      "canonical_title": "Hendeseh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Hendeseh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Hendeseh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "هندسه",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "هندسه",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.baaraan-toee",
+      "canonical_title": "Baaraan Toee",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Baaraan Toee",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Baaraan Toee",
+          "artist": "چارتار"
+        },
+        {
+          "title": "باران تویی",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "باران تویی",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.zane-divaaneh",
+      "canonical_title": "Zane Divaaneh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Zane Divaaneh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Zane Divaaneh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "زن دیوانه",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "زن دیوانه",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.kalaagh",
+      "canonical_title": "Kalaagh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Kalaagh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Kalaagh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "کلاغ",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "کلاغ",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.asheghaaneh-tanhaast",
+      "canonical_title": "Asheghaaneh Tanhaast",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Asheghaaneh Tanhaast",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Asheghaaneh Tanhaast",
+          "artist": "چارتار"
+        },
+        {
+          "title": "عاشقانه تنهاست",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "عاشقانه تنهاست",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.harfi-bezan",
+      "canonical_title": "Harfi Bezan",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Harfi Bezan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Harfi Bezan",
+          "artist": "چارتار"
+        },
+        {
+          "title": "حرفی بزن",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "حرفی بزن",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.khosha-be-man",
+      "canonical_title": "Khosha Be Man",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Khosha Be Man",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Khosha Be Man",
+          "artist": "چارتار"
+        },
+        {
+          "title": "خوشا به من",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "خوشا به من",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.shabihe-yek-mordaab",
+      "canonical_title": "Shabihe Yek Mordaab",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Shabihe Yek Mordaab",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Shabihe Yek Mordaab",
+          "artist": "چارتار"
+        },
+        {
+          "title": "شبیه یک مرداب",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "شبیه یک مرداب",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.dar-hasrate-maah",
+      "canonical_title": "Dar Hasrate Maah",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Dar Hasrate Maah",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Dar Hasrate Maah",
+          "artist": "چارتار"
+        },
+        {
+          "title": "در حسرت ماه",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "در حسرت ماه",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.ghataar",
+      "canonical_title": "Ghataar",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Baaraan Toee",
+      "aliases": [
+        {
+          "title": "Ghataar",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Ghataar",
+          "artist": "چارتار"
+        },
+        {
+          "title": "قطار",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "قطار",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.leylache",
+      "canonical_title": "Leylaacheh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Leylache",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Leylache",
+          "artist": "چارتار"
+        },
+        {
+          "title": "لیلاچه",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "لیلاچه",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Leylaacheh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Leylaacheh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Leylacheh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Leylacheh",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.aseman-ham-zamin-khorad",
+      "canonical_title": "Aseman Ham Zamin Mikhorad",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Aseman Ham Zamin Khorad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Aseman Ham Zamin Khorad",
+          "artist": "چارتار"
+        },
+        {
+          "title": "آسمان هم زمین می‌خورد",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "آسمان هم زمین می‌خورد",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Aseman Ham Zamin Mikhord",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Aseman Ham Zamin Mikhord",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Asemaan Ham Zamin Mikhorad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Asemaan Ham Zamin Mikhorad",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Asemaan Ham Zamin Mikhord",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Asemaan Ham Zamin Mikhord",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Aseman Ham Zamin Mikhorad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Aseman Ham Zamin Mikhorad",
+          "artist": "چارتار"
+        }
+      ],
+      "duplicate_group_id": "dup.ir.chaartaar.aseman-ham-zamin-mikhorad"
+    },
+    {
+      "id": "ir.chaartaar.babr",
+      "canonical_title": "Babr",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Babr",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Babr",
+          "artist": "چارتار"
+        },
+        {
+          "title": "ببر",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "ببر",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.jaddeh-miraghsad",
+      "canonical_title": "Jaade Miraghsad",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Jaddeh Miraghsad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Jaddeh Miraghsad",
+          "artist": "چارتار"
+        },
+        {
+          "title": "جاده می‌رقصد",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "جاده می‌رقصد",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Jaade Miraghsad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Jaade Miraghsad",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Jadde Miraghsad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Jadde Miraghsad",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Jaadeh Miraghsad",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Jaadeh Miraghsad",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.hozori-etefaghi",
+      "canonical_title": "Hozoori Etefaghi",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Hozori Etefaghi",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Hozori Etefaghi",
+          "artist": "چارتار"
+        },
+        {
+          "title": "حضوری اتفاقی",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "حضوری اتفاقی",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Hozoori Etefaghi",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Hozoori Etefaghi",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.hich-dar-hich",
+      "canonical_title": "Hich Dar Hich",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Hich Dar Hich",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Hich Dar Hich",
+          "artist": "چارتار"
+        },
+        {
+          "title": "هیچ در هیچ",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "هیچ در هیچ",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.man-dahanam",
+      "canonical_title": "Man Dahaanam",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Man Dahanam",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Man Dahanam",
+          "artist": "چارتار"
+        },
+        {
+          "title": "من دهانم",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "من دهانم",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Man Dahaanam",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Man Dahaanam",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.ghazal-nashod",
+      "canonical_title": "Ghazal Nashod",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Ghazal Nashod",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Ghazal Nashod",
+          "artist": "چارتار"
+        },
+        {
+          "title": "غزل نشد",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "غزل نشد",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.daricheh",
+      "canonical_title": "Daricheh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Jaade Miraghsad",
+      "aliases": [
+        {
+          "title": "Daricheh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Daricheh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "دریچه",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "دریچه",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.aghoosh",
+      "canonical_title": "Aghoosh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Aghoosh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Aghoosh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "آغوش",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "آغوش",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.door",
+      "canonical_title": "Door",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Door",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Door",
+          "artist": "چارتار"
+        },
+        {
+          "title": "دور",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "دور",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.hejrat",
+      "canonical_title": "Hejrat",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Hejrat",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Hejrat",
+          "artist": "چارتار"
+        },
+        {
+          "title": "هجرت",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "هجرت",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.darya-kojaast",
+      "canonical_title": "Darya Kojaast",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Darya Kojaast",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Darya Kojaast",
+          "artist": "چارتار"
+        },
+        {
+          "title": "دریا کجاست",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "دریا کجاست",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Darya Kojast",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Darya Kojast",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Daryaa Kojaast",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Daryaa Kojaast",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Daryaa Kojast",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Daryaa Kojast",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.bargard",
+      "canonical_title": "Bargard",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Bargard",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Bargard",
+          "artist": "چارتار"
+        },
+        {
+          "title": "برگرد",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "برگرد",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.benevis",
+      "canonical_title": "Benevis",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Benevis",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Benevis",
+          "artist": "چارتار"
+        },
+        {
+          "title": "بنویس",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "بنویس",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.ghoroob",
+      "canonical_title": "Ghoroob",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Ghoroob",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Ghoroob",
+          "artist": "چارتار"
+        },
+        {
+          "title": "غروب",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "غروب",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.tardid-raftan",
+      "canonical_title": "Tardide Raftan",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Tardid Raftan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Tardid Raftan",
+          "artist": "چارتار"
+        },
+        {
+          "title": "تردید رفتن",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "تردید رفتن",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Tardide Raftan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Tardide Raftan",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Tardideh Raftan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Tardideh Raftan",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.chashm-bi-barabar",
+      "canonical_title": "Chashm Bi Barabar",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Chashm Bi Barabar",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Chashm Bi Barabar",
+          "artist": "چارتار"
+        },
+        {
+          "title": "چشم بی برابر",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "چشم بی برابر",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.khalgh",
+      "canonical_title": "Khalgh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Darya Kojaast",
+      "aliases": [
+        {
+          "title": "Khalgh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Khalgh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "خلق",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "خلق",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.single.aavaazeh-khaan",
+      "canonical_title": "Aavaazeh Khaan",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Aavaazeh Khaan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Aavaazeh Khaan",
+          "artist": "چارتار"
+        },
+        {
+          "title": "آوازه خوان",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "آوازه خوان",
+          "artist": "چارتار"
+        },
+        {
+          "title": "Avazeh Khan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Avazeh Khan",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.single.adineh",
+      "canonical_title": "Adineh",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Adineh",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Adineh",
+          "artist": "چارتار"
+        },
+        {
+          "title": "آدینه",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "آدینه",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.single.gele-kon",
+      "canonical_title": "Gele Kon",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Gele Kon",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Gele Kon",
+          "artist": "چارتار"
+        },
+        {
+          "title": "گله کن",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "گله کن",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.single.sedayam-bezan",
+      "canonical_title": "Sedayam Bezan",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Sedayam Bezan",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Sedayam Bezan",
+          "artist": "چارتار"
+        },
+        {
+          "title": "صدایم بزن",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "صدایم بزن",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.chaartaar.single.iran",
+      "canonical_title": "Iran",
+      "artist_ids": [
+        "ir.chaartaar"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Iran",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "Iran",
+          "artist": "چارتار"
+        },
+        {
+          "title": "ایران",
+          "artist": "Chaartaar"
+        },
+        {
+          "title": "ایران",
+          "artist": "چارتار"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.piano-piano",
+      "canonical_title": "Piano Piano",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "Piano Piano",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Piano Piano",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.slightly-slower",
+      "canonical_title": "Slightly Slower",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "Slightly Slower",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Slightly Slower",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.whatever-might-be",
+      "canonical_title": "Whatever Might Be",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "Whatever Might Be",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Whatever Might Be",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.a-lover-s-guide",
+      "canonical_title": "A Lover's Guide",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "A Lover's Guide",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "A Lover's Guide",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.slowly-slowly",
+      "canonical_title": "Slowly Slowly",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "Slowly Slowly",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Slowly Slowly",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.in-honor-of-hossein-alizadeh",
+      "canonical_title": "In Honor Of Hossein Alizadeh",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "In Honor Of Hossein Alizadeh",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "In Honor Of Hossein Alizadeh",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.dang-show",
+      "canonical_title": "Dang Show",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Shiraz 40 Year Old",
+      "aliases": [
+        {
+          "title": "Dang Show",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Dang Show",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.distant-lover",
+      "canonical_title": "Distant Lover",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Dang Show Room",
+      "aliases": [
+        {
+          "title": "Distant Lover",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Distant Lover",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.hallwa",
+      "canonical_title": "Hallwa",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Dang Show Room",
+      "aliases": [
+        {
+          "title": "Hallwa",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Hallwa",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.adagietto-in-g-minor",
+      "canonical_title": "Adagietto In G Minor",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Dang Show Room",
+      "aliases": [
+        {
+          "title": "Adagietto In G Minor",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Adagietto In G Minor",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.7-november",
+      "canonical_title": "#7 November",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Dang Show Room",
+      "aliases": [
+        {
+          "title": "#7 November",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "#7 November",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.ma-he-ha",
+      "canonical_title": "Ma He Ha",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Dang Show Room",
+      "aliases": [
+        {
+          "title": "Ma He Ha",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Ma He Ha",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.ma-heart-ma-soul",
+      "canonical_title": "Ma Heart & Ma Soul",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Dang Show Room",
+      "aliases": [
+        {
+          "title": "Ma Heart & Ma Soul",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Ma Heart & Ma Soul",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.baade-gonahkar",
+      "canonical_title": "Baade Gonahkar",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Baade Gonahkar",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Baade Gonahkar",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.khata-kardam",
+      "canonical_title": "Khata Kardam",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Khata Kardam",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Khata Kardam",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.khata-nist",
+      "canonical_title": "Khata Nist",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Khata Nist",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Khata Nist",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.attar",
+      "canonical_title": "Attar",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Attar",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Attar",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.chee-zee",
+      "canonical_title": "Chee Zee",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Chee Zee",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Chee Zee",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.beshit",
+      "canonical_title": "BeShit",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "BeShit",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "BeShit",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.khaleedj",
+      "canonical_title": "Khaleedj",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Khaleedj",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Khaleedj",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.akhare-ghesse",
+      "canonical_title": "Akhare Ghesse",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Mad O Nay",
+      "aliases": [
+        {
+          "title": "Akhare Ghesse",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Akhare Ghesse",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.atasho-bad",
+      "canonical_title": "Atasho Bad",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Atasho Bad",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Atasho Bad",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.ye-shahre-door",
+      "canonical_title": "Ye Shahre Door",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Ye Shahre Door",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Ye Shahre Door",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.delam-delam-delam",
+      "canonical_title": "Delam Delam Delam",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Delam Delam Delam",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Delam Delam Delam",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.up-in-flames",
+      "canonical_title": "Up In Flames",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Up In Flames",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Up In Flames",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.night-by-the-spring",
+      "canonical_title": "Night By The Spring",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Night By The Spring",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Night By The Spring",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.yalda-dance",
+      "canonical_title": "Yalda Dance",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Yalda Dance",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Yalda Dance",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.dang-show.single.zahhak",
+      "canonical_title": "Zahhak",
+      "artist_ids": [
+        "ir.dang-show"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Zahhak",
+          "artist": "Dang Show"
+        },
+        {
+          "title": "Zahhak",
+          "artist": "دنگ شو"
+        }
+      ]
+    },
+    {
+      "id": "ir.daal-band.single.khiyal",
+      "canonical_title": "Khiyal",
+      "artist_ids": [
+        "ir.daal-band"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Khiyal",
+          "artist": "Daal Band"
+        },
+        {
+          "title": "Khiyal",
+          "artist": "دال بند"
+        }
+      ]
+    },
+    {
+      "id": "ir.daal-band.single.door-o-nazdik",
+      "canonical_title": "Door o Nazdik",
+      "artist_ids": [
+        "ir.daal-band"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Door o Nazdik",
+          "artist": "Daal Band"
+        },
+        {
+          "title": "Door o Nazdik",
+          "artist": "دال بند"
+        }
+      ]
+    },
+    {
+      "id": "ir.daal-band.single.mahie-sefid",
+      "canonical_title": "Mahie Sefid",
+      "artist_ids": [
+        "ir.daal-band"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Mahie Sefid",
+          "artist": "Daal Band"
+        },
+        {
+          "title": "Mahie Sefid",
+          "artist": "دال بند"
+        }
+      ]
+    },
+    {
+      "id": "ir.daal-band.single.ham-avaz",
+      "canonical_title": "Ham Avaz",
+      "artist_ids": [
+        "ir.daal-band"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Ham Avaz",
+          "artist": "Daal Band"
+        },
+        {
+          "title": "Ham Avaz",
+          "artist": "دال بند"
+        }
+      ]
+    },
+    {
+      "id": "ir.daal-band.single.parvaze-tehran-shiraz",
+      "canonical_title": "Parvaze Tehran Shiraz",
+      "artist_ids": [
+        "ir.daal-band"
+      ],
+      "album": "Singles",
+      "aliases": [
+        {
+          "title": "Parvaze Tehran Shiraz",
+          "artist": "Daal Band"
+        },
+        {
+          "title": "Parvaze Tehran Shiraz",
+          "artist": "دال بند"
+        }
+      ]
+    },
+    {
+      "id": "ir.pallett.marker.mr-violet",
+      "canonical_title": "Mr. Violet",
+      "artist_ids": [
+        "ir.pallett"
+      ],
+      "album": "Mr. Violet",
+      "aliases": [
+        {
+          "title": "Mr. Violet",
+          "artist": "Pallett"
+        },
+        {
+          "title": "Mr. Violet",
+          "artist": "پالت"
+        }
+      ]
+    },
+    {
+      "id": "ir.pallett.marker.tehran-smile",
+      "canonical_title": "Tehran Smile",
+      "artist_ids": [
+        "ir.pallett"
+      ],
+      "album": "Tehran Smile",
+      "aliases": [
+        {
+          "title": "Tehran Smile",
+          "artist": "Pallett"
+        },
+        {
+          "title": "Tehran Smile",
+          "artist": "پالت"
+        }
+      ]
+    },
+    {
+      "id": "ir.pallett.marker.prime-meridian",
+      "canonical_title": "Prime Meridian",
+      "artist_ids": [
+        "ir.pallett"
+      ],
+      "album": "Prime Meridian",
+      "aliases": [
+        {
+          "title": "Prime Meridian",
+          "artist": "Pallett"
+        },
+        {
+          "title": "Prime Meridian",
+          "artist": "پالت"
+        }
+      ]
+    },
+    {
+      "id": "ir.pallett.marker.tamame-natamam",
+      "canonical_title": "Tamame Natamam",
+      "artist_ids": [
+        "ir.pallett"
+      ],
+      "album": "Tamame Natamam",
+      "aliases": [
+        {
+          "title": "Tamame Natamam",
+          "artist": "Pallett"
+        },
+        {
+          "title": "Tamame Natamam",
+          "artist": "پالت"
+        }
+      ]
+    }
+  ]
+}

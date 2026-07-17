@@ -1,0 +1,1480 @@
+{
+  "version": 3,
+  "description": "Community-maintained Iranian artist identity registry. Generated seed pack 2026-07-17 from open web references plus manual normalization for Persian music organizer fallback. Update: paired with Chaartaar album alias canonicalization.",
+  "artists": [
+    {
+      "id": "ir.alireza-ghorbani",
+      "canonical_name": "Alireza Ghorbani",
+      "preferred_folder_name": "Alireza Ghorbani",
+      "native_name": "علیرضا قربانی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "علیرضا قربانی",
+        "Alireza Ghorbani",
+        "علی رضا قربانی",
+        "Alireza Qorbani",
+        "Alireza Ghorbany",
+        "alireza_ghorbani"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.hassan-shamaeezadeh",
+      "canonical_name": "Hassan Shamaeezadeh",
+      "preferred_folder_name": "Hassan Shamaeezadeh",
+      "native_name": "حسن شماعی‌زاده",
+      "roles": [
+        "singer",
+        "composer"
+      ],
+      "aliases": [
+        "حسن شماعی‌زاده",
+        "Hassan Shamaeezadeh",
+        "حسن شماعی زاده",
+        "Hassan Shamaizadeh",
+        "Hassan Shamaeezade",
+        "hassan_shamaeezadeh",
+        "hassan_shamaizadeh"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.hayedeh",
+      "canonical_name": "Hayedeh",
+      "preferred_folder_name": "Hayedeh",
+      "native_name": "هایده",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "هایده",
+        "Hayedeh",
+        "Haydeh",
+        "Haideh",
+        "Masoumeh Dadehbala",
+        "معصومه دده‌بالا"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.viguen",
+      "canonical_name": "Viguen",
+      "preferred_folder_name": "Viguen",
+      "native_name": "ویگن",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "ویگن",
+        "Viguen",
+        "Vigen",
+        "Viguen Derderian",
+        "Vigen Derderian",
+        "ویگن دردریان"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.arman-garshasbi",
+      "canonical_name": "Arman Garshasbi",
+      "preferred_folder_name": "Arman Garshasbi",
+      "native_name": "آرمان گرشاسبی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "آرمان گرشاسبی",
+        "Arman Garshasbi",
+        "ارمان گرشاسبی",
+        "Arman Garshasbi UpMusic",
+        "Arman Garshasbi~ UpMusic",
+        "Arman Garshasbi - UpMusic",
+        "arman_garshasbi"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.anoushiravan-rohani",
+      "canonical_name": "Anoushiravan Rohani",
+      "preferred_folder_name": "Anoushiravan Rohani",
+      "native_name": "انوشیروان روحانی",
+      "roles": [
+        "composer",
+        "pianist",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "انوشیروان روحانی",
+        "Anoushiravan Rohani",
+        "انوشیروان روهانی",
+        "Anoushirvan Rohani",
+        "انوشیروان روحانى",
+        "anoushirvan_rohani"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.dang-show",
+      "canonical_name": "Dang Show",
+      "preferred_folder_name": "Dang Show",
+      "native_name": "دنگ شو",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "دنگ شو",
+        "Dang Show",
+        "DangShow",
+        "Dang Shou",
+        "Dange Show",
+        "Deng Show",
+        "دنگ‌شو",
+        "گروه دنگ شو"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.chaartaar",
+      "canonical_name": "Chaartaar",
+      "preferred_folder_name": "Chaartaar",
+      "native_name": "چارتار",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "چارتار",
+        "Chaartaar",
+        "ChaarTaar",
+        "Chartaaar",
+        "Chartaar",
+        "Chaartar",
+        "ChaharTaar",
+        "چهارتار",
+        "گروه چارتار"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mohammad-reza-shajarian",
+      "canonical_name": "Mohammad Reza Shajarian",
+      "preferred_folder_name": "Mohammad Reza Shajarian",
+      "native_name": "محمدرضا شجریان",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "محمدرضا شجریان",
+        "Mohammad Reza Shajarian",
+        "محمد رضا شجریان",
+        "Mohammad-Reza Shajarian",
+        "Mohammadreza Shajarian",
+        "M. R. Shajarian",
+        "Mohammad Reza Shajarian - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.homayoun-shajarian",
+      "canonical_name": "Homayoun Shajarian",
+      "preferred_folder_name": "Homayoun Shajarian",
+      "native_name": "همایون شجریان",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "همایون شجریان",
+        "Homayoun Shajarian",
+        "Homayun Shajarian",
+        "Homayon Shajarian",
+        "همايون شجريان"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.shahram-nazeri",
+      "canonical_name": "Shahram Nazeri",
+      "preferred_folder_name": "Shahram Nazeri",
+      "native_name": "شهرام ناظری",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "شهرام ناظری",
+        "Shahram Nazeri",
+        "Shahram Nazerii",
+        "Shahram Nazeri Kermanshahi",
+        "شهرام نازری"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.salar-aghili",
+      "canonical_name": "Salar Aghili",
+      "preferred_folder_name": "Salar Aghili",
+      "native_name": "سالار عقیلی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "سالار عقیلی",
+        "Salar Aghili",
+        "سالار عقيلي",
+        "Salar Aghilii",
+        "Salar Aghily"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.alireza-eftekhari",
+      "canonical_name": "Alireza Eftekhari",
+      "preferred_folder_name": "Alireza Eftekhari",
+      "native_name": "علیرضا افتخاری",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "علیرضا افتخاری",
+        "Alireza Eftekhari",
+        "Ali Reza Eftekhari",
+        "Alireza Eftekhary",
+        "علی رضا افتخاری"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mohammad-esfahani",
+      "canonical_name": "Mohammad Esfahani",
+      "preferred_folder_name": "Mohammad Esfahani",
+      "native_name": "محمد اصفهانی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "محمد اصفهانی",
+        "Mohammad Esfahani",
+        "Mohammad Isfahani",
+        "محمد اصفهاني"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mohammad-motamedi",
+      "canonical_name": "Mohammad Motamedi",
+      "preferred_folder_name": "Mohammad Motamedi",
+      "native_name": "محمد معتمدی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "محمد معتمدی",
+        "Mohammad Motamedi",
+        "Mohammad Motamedy"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.iraj-bastami",
+      "canonical_name": "Iraj Bastami",
+      "preferred_folder_name": "Iraj Bastami",
+      "native_name": "ایرج بسطامی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "ایرج بسطامی",
+        "Iraj Bastami",
+        "Iraj Bastamy",
+        "ايرج بسطامي"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.gholamhossein-banan",
+      "canonical_name": "Gholam Hossein Banan",
+      "preferred_folder_name": "Gholam Hossein Banan",
+      "native_name": "غلامحسین بنان",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "غلامحسین بنان",
+        "Gholam Hossein Banan",
+        "Banan",
+        "غلام حسین بنان",
+        "Gholam-Hossein Banan",
+        "Gholamhosein Banan"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.sima-bina",
+      "canonical_name": "Sima Bina",
+      "preferred_folder_name": "Sima Bina",
+      "native_name": "سیما بینا",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "سیما بینا",
+        "Sima Bina",
+        "سيما بينا"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.parisa",
+      "canonical_name": "Parisa",
+      "preferred_folder_name": "Parisa",
+      "native_name": "پریسا",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "پریسا",
+        "Parisa",
+        "پريسا",
+        "Fatemeh Vaezi",
+        "فاطمه واعظی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.hossein-alizadeh",
+      "canonical_name": "Hossein Alizadeh",
+      "preferred_folder_name": "Hossein Alizadeh",
+      "native_name": "حسین علیزاده",
+      "roles": [
+        "composer",
+        "tar",
+        "setar",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "حسین علیزاده",
+        "Hossein Alizadeh",
+        "حسين عليزاده",
+        "Hossein Alizade"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.kayhan-kalhor",
+      "canonical_name": "Kayhan Kalhor",
+      "preferred_folder_name": "Kayhan Kalhor",
+      "native_name": "کیهان کلهر",
+      "roles": [
+        "composer",
+        "kamancheh",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "کیهان کلهر",
+        "Kayhan Kalhor",
+        "کيهان کلهر",
+        "Keyhan Kalhor"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.parviz-meshkatian",
+      "canonical_name": "Parviz Meshkatian",
+      "preferred_folder_name": "Parviz Meshkatian",
+      "native_name": "پرویز مشکاتیان",
+      "roles": [
+        "composer",
+        "santur",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "پرویز مشکاتیان",
+        "Parviz Meshkatian",
+        "پرويز مشکاتيان"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.fardin-khalatbari",
+      "canonical_name": "Fardin Khalatbari",
+      "preferred_folder_name": "Fardin Khalatbari",
+      "native_name": "فردین خلعتبری",
+      "roles": [
+        "composer"
+      ],
+      "aliases": [
+        "فردین خلعتبری",
+        "Fardin Khalatbari",
+        "فردين خلعتبري",
+        "Fardin Khalatbary"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.arash-fathi",
+      "canonical_name": "Arash Fathi",
+      "preferred_folder_name": "Arash Fathi",
+      "native_name": "آرش فتحی",
+      "roles": [
+        "composer"
+      ],
+      "aliases": [
+        "آرش فتحی",
+        "Arash Fathi",
+        "آرش فتحي",
+        "Arash Fathy"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.ehsan-haeri",
+      "canonical_name": "Ehsan Haeri",
+      "preferred_folder_name": "Ehsan Haeri",
+      "native_name": "احسان حائری",
+      "roles": [
+        "lyricist",
+        "songwriter"
+      ],
+      "aliases": [
+        "احسان حائری",
+        "Ehsan Haeri",
+        "Ehsan Haaeri"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.aeen-ahmadifar",
+      "canonical_name": "Aeen Ahmadifar",
+      "preferred_folder_name": "Aeen Ahmadifar",
+      "native_name": "آیین احمدی‌فر",
+      "roles": [
+        "arranger",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "آیین احمدی‌فر",
+        "Aeen Ahmadifar",
+        "آئین احمدی‌فر",
+        "Aein Ahmadifar"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.googoosh",
+      "canonical_name": "Googoosh",
+      "preferred_folder_name": "Googoosh",
+      "native_name": "گوگوش",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "گوگوش",
+        "Googoosh",
+        "Gugush",
+        "Gougoush",
+        "Faegheh Atashin",
+        "فائقه آتشین"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.ebi",
+      "canonical_name": "Ebi",
+      "preferred_folder_name": "Ebi",
+      "native_name": "ابی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "ابی",
+        "Ebi",
+        "Ebrahim Hamedi",
+        "ابراهیم حامدی",
+        "Ebi Hamedi",
+        "ابی حامدی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.dariush",
+      "canonical_name": "Dariush",
+      "preferred_folder_name": "Dariush",
+      "native_name": "داریوش",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "داریوش",
+        "Dariush",
+        "Dariush Eghbali",
+        "داریوش اقبالی",
+        "Daryoush",
+        "Dariush Eqbali"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.moein",
+      "canonical_name": "Moein",
+      "preferred_folder_name": "Moein",
+      "native_name": "معین",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "معین",
+        "Moein",
+        "Nasrollah Moein",
+        "نصرالله معین",
+        "Moin",
+        "Moeen"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mahasti",
+      "canonical_name": "Mahasti",
+      "preferred_folder_name": "Mahasti",
+      "native_name": "مهستی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "مهستی",
+        "Mahasti",
+        "Mahasti Dadehbala",
+        "مهستی دده‌بالا"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.sattar",
+      "canonical_name": "Sattar",
+      "preferred_folder_name": "Sattar",
+      "native_name": "ستار",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "ستار",
+        "Sattar",
+        "Satar"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.siavash-ghomayshi",
+      "canonical_name": "Siavash Ghomayshi",
+      "preferred_folder_name": "Siavash Ghomayshi",
+      "native_name": "سیاوش قمیشی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "سیاوش قمیشی",
+        "Siavash Ghomayshi",
+        "Siavash Ghomeishi",
+        "Siavash Ghomeyshi",
+        "سیاوش قميشی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.farhad-mehrad",
+      "canonical_name": "Farhad Mehrad",
+      "preferred_folder_name": "Farhad Mehrad",
+      "native_name": "فرهاد مهراد",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "فرهاد مهراد",
+        "Farhad Mehrad",
+        "Farhad",
+        "فرهاد",
+        "Farhad Mehrad - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.fereydoun-foroughi",
+      "canonical_name": "Fereydoun Foroughi",
+      "preferred_folder_name": "Fereydoun Foroughi",
+      "native_name": "فریدون فروغی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "فریدون فروغی",
+        "Fereydoun Foroughi",
+        "Fereydun Foroughi",
+        "فريدون فروغي"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.faramarz-aslani",
+      "canonical_name": "Faramarz Aslani",
+      "preferred_folder_name": "Faramarz Aslani",
+      "native_name": "فرامرز اصلانی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "فرامرز اصلانی",
+        "Faramarz Aslani",
+        "فرامرز اصلاني"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.habib-mohebian",
+      "canonical_name": "Habib Mohebian",
+      "preferred_folder_name": "Habib Mohebian",
+      "native_name": "حبیب محبیان",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "حبیب محبیان",
+        "Habib Mohebian",
+        "Habib",
+        "حبیب",
+        "Habib Mohebiyan"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.kourosh-yaghmaei",
+      "canonical_name": "Kourosh Yaghmaei",
+      "preferred_folder_name": "Kourosh Yaghmaei",
+      "native_name": "کوروش یغمایی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "کوروش یغمایی",
+        "Kourosh Yaghmaei",
+        "Kourosh Yaghmaie"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.leila-forouhar",
+      "canonical_name": "Leila Forouhar",
+      "preferred_folder_name": "Leila Forouhar",
+      "native_name": "لیلا فروهر",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "لیلا فروهر",
+        "Leila Forouhar",
+        "Leyla Forouhar",
+        "Leila Foruhar",
+        "ليلا فروهر"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.shohreh-solati",
+      "canonical_name": "Shohreh Solati",
+      "preferred_folder_name": "Shohreh Solati",
+      "native_name": "شهره صولتی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "شهره صولتی",
+        "Shohreh Solati",
+        "Shohreh",
+        "شهره",
+        "Shoreh Solati"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.homeyra",
+      "canonical_name": "Homeyra",
+      "preferred_folder_name": "Homeyra",
+      "native_name": "حمیرا",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "حمیرا",
+        "Homeyra",
+        "Homayra",
+        "پروانه امیرافشاری"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mansour",
+      "canonical_name": "Mansour",
+      "preferred_folder_name": "Mansour",
+      "native_name": "منصور",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "منصور",
+        "Mansour",
+        "Mansour Jafari Mamaghani",
+        "منصور جعفری ممقانی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.andy",
+      "canonical_name": "Andy",
+      "preferred_folder_name": "Andy",
+      "native_name": "اندی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "اندی",
+        "Andy",
+        "Andranik Madadian",
+        "اندی مددیان",
+        "Andranik Madadiyan"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.shahram-shabpareh",
+      "canonical_name": "Shahram Shabpareh",
+      "preferred_folder_name": "Shahram Shabpareh",
+      "native_name": "شهرام شب‌پره",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "شهرام شب‌پره",
+        "Shahram Shabpareh",
+        "شهرام شب پره",
+        "Shahram Shabparreh"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.bijan-mortazavi",
+      "canonical_name": "Bijan Mortazavi",
+      "preferred_folder_name": "Bijan Mortazavi",
+      "native_name": "بیژن مرتضوی",
+      "roles": [
+        "singer",
+        "violinist",
+        "composer"
+      ],
+      "aliases": [
+        "بیژن مرتضوی",
+        "Bijan Mortazavi",
+        "بيژن مرتضوی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.morteza",
+      "canonical_name": "Morteza",
+      "preferred_folder_name": "Morteza",
+      "native_name": "مرتضی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "مرتضی",
+        "Morteza",
+        "Morteza Barjesteh",
+        "مرتضی برجسته"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.morteza-pashaei",
+      "canonical_name": "Morteza Pashaei",
+      "preferred_folder_name": "Morteza Pashaei",
+      "native_name": "مرتضی پاشایی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "مرتضی پاشایی",
+        "Morteza Pashaei",
+        "Morteza Pashaie",
+        "Morteza Pashaei UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mohsen-chavoshi",
+      "canonical_name": "Mohsen Chavoshi",
+      "preferred_folder_name": "Mohsen Chavoshi",
+      "native_name": "محسن چاوشی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "محسن چاوشی",
+        "Mohsen Chavoshi",
+        "Mohsen Chavoshi Hosseini",
+        "محسن چاوشي",
+        "Mohsen Chavoshi - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mohsen-yeganeh",
+      "canonical_name": "Mohsen Yeganeh",
+      "preferred_folder_name": "Mohsen Yeganeh",
+      "native_name": "محسن یگانه",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "محسن یگانه",
+        "Mohsen Yeganeh",
+        "محسن يگانه",
+        "Mohsen Yegane"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.reza-sadeghi",
+      "canonical_name": "Reza Sadeghi",
+      "preferred_folder_name": "Reza Sadeghi",
+      "native_name": "رضا صادقی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "رضا صادقی",
+        "Reza Sadeghi",
+        "رضا صادقي",
+        "Reza Sadeghi - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.benyamin-bahadori",
+      "canonical_name": "Benyamin Bahadori",
+      "preferred_folder_name": "Benyamin Bahadori",
+      "native_name": "بنیامین بهادری",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "بنیامین بهادری",
+        "Benyamin Bahadori",
+        "بنیامین",
+        "Benyamin",
+        "Benyamin Bahadori - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.babak-jahanbakhsh",
+      "canonical_name": "Babak Jahanbakhsh",
+      "preferred_folder_name": "Babak Jahanbakhsh",
+      "native_name": "بابک جهانبخش",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "بابک جهانبخش",
+        "Babak Jahanbakhsh",
+        "Babak Jahanbakhsh - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.ehsan-khajeh-amiri",
+      "canonical_name": "Ehsan Khajeh Amiri",
+      "preferred_folder_name": "Ehsan Khajeh Amiri",
+      "native_name": "احسان خواجه‌امیری",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "احسان خواجه‌امیری",
+        "Ehsan Khajeh Amiri",
+        "احسان خواجه امیری",
+        "Ehsan Khaje Amiri"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.shadmehr-aghili",
+      "canonical_name": "Shadmehr Aghili",
+      "preferred_folder_name": "Shadmehr Aghili",
+      "native_name": "شادمهر عقیلی",
+      "roles": [
+        "singer",
+        "composer",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "شادمهر عقیلی",
+        "Shadmehr Aghili",
+        "شادمهر",
+        "Shadmehr",
+        "شادمهر عقيلي",
+        "Shadmehr Aghili - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.reza-yazdani",
+      "canonical_name": "Reza Yazdani",
+      "preferred_folder_name": "Reza Yazdani",
+      "native_name": "رضا یزدانی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "رضا یزدانی",
+        "Reza Yazdani",
+        "رضا يزداني",
+        "Reza Yazdani - UpMusic"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.sirvan-khosravi",
+      "canonical_name": "Sirvan Khosravi",
+      "preferred_folder_name": "Sirvan Khosravi",
+      "native_name": "سیروان خسروی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "سیروان خسروی",
+        "Sirvan Khosravi",
+        "Sirvan",
+        "سیروان",
+        "سيروان خسروي"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.xaniar-khosravi",
+      "canonical_name": "Xaniar Khosravi",
+      "preferred_folder_name": "Xaniar Khosravi",
+      "native_name": "زانیار خسروی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "زانیار خسروی",
+        "Xaniar Khosravi",
+        "Xaniar",
+        "زانیار",
+        "Xanyar Khosravi"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.ali-zand-vakili",
+      "canonical_name": "Ali Zand Vakili",
+      "preferred_folder_name": "Ali Zand Vakili",
+      "native_name": "علی زند وکیلی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "علی زند وکیلی",
+        "Ali Zand Vakili",
+        "علی زندوکیلی",
+        "Ali Zandvakili",
+        "Ali Zande Vakili"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.hamed-homayoun",
+      "canonical_name": "Hamed Homayoun",
+      "preferred_folder_name": "Hamed Homayoun",
+      "native_name": "حامد همایون",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "حامد همایون",
+        "Hamed Homayoun",
+        "حامد همايون",
+        "Hamed Homayun"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mehdi-yarrahi",
+      "canonical_name": "Mehdi Yarrahi",
+      "preferred_folder_name": "Mehdi Yarrahi",
+      "native_name": "مهدی یراحی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "مهدی یراحی",
+        "Mehdi Yarrahi",
+        "Mehdi Yarahi",
+        "مهدي يراحي"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.shervin-hajipour",
+      "canonical_name": "Shervin Hajipour",
+      "preferred_folder_name": "Shervin Hajipour",
+      "native_name": "شروین حاجی‌پور",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "شروین حاجی‌پور",
+        "Shervin Hajipour",
+        "شروین حاجی پور"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.alireza-talischi",
+      "canonical_name": "Alireza Talischi",
+      "preferred_folder_name": "Alireza Talischi",
+      "native_name": "علیرضا طلیسچی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "علیرضا طلیسچی",
+        "Alireza Talischi",
+        "علی رضا طلیسچی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.farzad-farzin",
+      "canonical_name": "Farzad Farzin",
+      "preferred_folder_name": "Farzad Farzin",
+      "native_name": "فرزاد فرزین",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "فرزاد فرزین",
+        "Farzad Farzin",
+        "فرزاد فرزين"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.mohsen-ebrahimzadeh",
+      "canonical_name": "Mohsen Ebrahimzadeh",
+      "preferred_folder_name": "Mohsen Ebrahimzadeh",
+      "native_name": "محسن ابراهیم‌زاده",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "محسن ابراهیم‌زاده",
+        "Mohsen Ebrahimzadeh",
+        "محسن ابراهیم زاده"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.omid-hajili",
+      "canonical_name": "Omid Hajili",
+      "preferred_folder_name": "Omid Hajili",
+      "native_name": "امید حاجیلی",
+      "roles": [
+        "singer",
+        "trumpet",
+        "instrumentalist"
+      ],
+      "aliases": [
+        "امید حاجیلی",
+        "Omid Hajili",
+        "اميد حاجيلي"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.sami-beigi",
+      "canonical_name": "Sami Beigi",
+      "preferred_folder_name": "Sami Beigi",
+      "native_name": "سامی بیگی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "سامی بیگی",
+        "Sami Beigi"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.sasy",
+      "canonical_name": "Sasy",
+      "preferred_folder_name": "Sasy",
+      "native_name": "ساسی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "ساسی",
+        "Sasy",
+        "Sasy Mankan",
+        "ساسی مانکن",
+        "ساسان یافته"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.ali-abdolmaleki",
+      "canonical_name": "Ali Abdolmaleki",
+      "preferred_folder_name": "Ali Abdolmaleki",
+      "native_name": "علی عبدالمالکی",
+      "roles": [
+        "singer",
+        "vocalist"
+      ],
+      "aliases": [
+        "علی عبدالمالکی",
+        "Ali Abdolmaleki"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.pallett",
+      "canonical_name": "Pallett",
+      "preferred_folder_name": "Pallett",
+      "native_name": "پالت",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "پالت",
+        "Pallett",
+        "Pallett Band",
+        "Pallet Band",
+        "گروه پالت",
+        "پالت بند"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.daal-band",
+      "canonical_name": "Daal Band",
+      "preferred_folder_name": "Daal Band",
+      "native_name": "دال بند",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "دال بند",
+        "Daal Band",
+        "Daal",
+        "DaalBand",
+        "گروه دال",
+        "دال"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.rastak",
+      "canonical_name": "Rastak",
+      "preferred_folder_name": "Rastak",
+      "native_name": "رستاک",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "رستاک",
+        "Rastak",
+        "Rastak Music Group",
+        "Rastak Group",
+        "گروه رستاک"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.bomrani",
+      "canonical_name": "Bomrani",
+      "preferred_folder_name": "Bomrani",
+      "native_name": "بمرانی",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "بمرانی",
+        "Bomrani",
+        "Bumrani",
+        "Bomrani Band",
+        "گروه بمرانی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.damahi",
+      "canonical_name": "Damahi",
+      "preferred_folder_name": "Damahi",
+      "native_name": "داماهی",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "داماهی",
+        "Damahi",
+        "Damahi Band",
+        "گروه داماهی"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.arian-band",
+      "canonical_name": "Arian Band",
+      "preferred_folder_name": "Arian Band",
+      "native_name": "گروه آریان",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "گروه آریان",
+        "Arian Band",
+        "Arian",
+        "آریان",
+        "Arian Music Band"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.black-cats",
+      "canonical_name": "Black Cats",
+      "preferred_folder_name": "Black Cats",
+      "native_name": "بلک کتس",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "بلک کتس",
+        "Black Cats",
+        "Black Cats Band",
+        "بلک کتز"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.hoorosh-band",
+      "canonical_name": "Hoorosh Band",
+      "preferred_folder_name": "Hoorosh Band",
+      "native_name": "هوروش بند",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "هوروش بند",
+        "Hoorosh Band",
+        "Hoorosh",
+        "هوروش",
+        "Hooroshband"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.macan-band",
+      "canonical_name": "Macan Band",
+      "preferred_folder_name": "Macan Band",
+      "native_name": "ماکان بند",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "ماکان بند",
+        "Macan Band",
+        "Macan",
+        "ماکان",
+        "MacanBand"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.puzzle-band",
+      "canonical_name": "Puzzle Band",
+      "preferred_folder_name": "Puzzle Band",
+      "native_name": "پازل بند",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "پازل بند",
+        "Puzzle Band",
+        "Puzzle"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    },
+    {
+      "id": "ir.25band",
+      "canonical_name": "25 Band",
+      "preferred_folder_name": "25 Band",
+      "native_name": "۲۵ باند",
+      "roles": [
+        "band",
+        "vocal_group"
+      ],
+      "aliases": [
+        "۲۵ باند",
+        "25 Band",
+        "Twenty Five Band",
+        "25Band",
+        "بیست و پنج باند"
+      ],
+      "musicbrainz_id": "",
+      "spotify_id": ""
+    }
+  ]
+}

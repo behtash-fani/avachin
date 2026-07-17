@@ -1,0 +1,15 @@
+{
+  "version": "2026-07-17-chaartaar-album-alias-fix",
+  "changes": [
+    "Added config album_aliases for Darya Kojaast/Daryaa Kojast variants.",
+    "Added config album_aliases for Jaade/Jaddeh Miraghsad variants.",
+    "Canonicalized Chaartaar Jaade/Jaddeh track registry album to Jaade Miraghsad.",
+    "Added exact title aliases for Aseman/Asemaan Ham Zamin Mikhord, Hozoori/Hozori Etefaghi, Tardide/Tardid Raftan, and Darya/Daryaa Kojaast."
+  ],
+  "expected_chaartaar_folders": [
+    "Baaraan Toee",
+    "Darya Kojaast",
+    "Jaade Miraghsad",
+    "Singles"
+  ]
+}
