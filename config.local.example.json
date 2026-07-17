@@ -1,10 +1,16 @@
 {
   "acoustid_api_key": "",
   "acoustid_api_key_env": "ACOUSTID_API_KEY",
+  "audd_api_token": "",
+  "audd_api_token_env": "AUDD_API_TOKEN",
+  "audio_recognition_fallbacks_enabled": true,
   "online_providers": {
-    "acoustid": true
+    "acoustid": true,
+    "audd": false
   },
   "fingerprint_identification_enabled": true,
   "fingerprint_when_uncertain": true,
-  "fingerprint_min_score": 0.72
+  "fingerprint_min_score": 0.72,
+  "audd_cache_days": 30,
+  "audd_request_timeout_seconds": 45
 }
