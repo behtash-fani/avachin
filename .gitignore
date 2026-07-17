@@ -8,8 +8,11 @@ venv/
 env/
 
 .env
+.env.*
 *.secret
 spotify_credentials.json
+config.local.json
+config.local.*.json
 
 reports/
 logs/
