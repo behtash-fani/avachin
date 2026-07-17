@@ -15,14 +15,15 @@ if not exist "config.json" (
 )
 
 echo.
-echo Avachin v11.4 - PREVIEW MODE
+echo Avachin v11.7 - LOCAL-FIRST PREVIEW MODE
 echo Select the ROOT of your complete music library.
 echo.
 echo This run performs identification and planning, then writes a report.
-echo AcoustID fingerprint recognition is used when ACOUSTID_API_KEY is set.
+echo The local fingerprint database is checked before every online provider.
+echo AcoustID and AudD are used only when the track is still unknown locally.
 echo No file will be changed.
 echo.
-py tools\avachin_launcher.py
+py tools\avachin_local_first_launcher.py
 set EXIT_CODE=%ERRORLEVEL%
 echo.
 pause
