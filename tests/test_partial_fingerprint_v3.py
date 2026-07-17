@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -57,6 +58,20 @@ def insert_recording(conn: sqlite3.Connection, artist: str, title: str, raw: lis
 
 
 class PartialFingerprintV3Tests(unittest.TestCase):
+    def test_cli_can_run_directly_from_tools_path(self) -> None:
+        script = PROJECT_ROOT / "tools" / "partial_fingerprint_library.py"
+        completed = subprocess.run(
+            [sys.executable, str(script), "--help"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("Manage Schema V3 partial fingerprints", completed.stdout)
+
     def test_segment_windows_cover_last_part(self) -> None:
         raw = synthetic_fingerprint(1200)
         windows = partial.segment_windows(raw, 120.0)
