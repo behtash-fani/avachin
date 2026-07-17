@@ -22,7 +22,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import smart_music_organizer as app
 
 
-LAUNCHER_VERSION = "11.4"
+LAUNCHER_VERSION = "11.4.1"
 
 
 def _first_env_value(*names: str) -> str:
@@ -80,6 +80,87 @@ def _apply_private_overrides(config: dict[str, Any]) -> None:
         config["spotify_client_secret"] = spotify_client_secret
 
 
+def _acoustid_lookup_post(
+    self: Any,
+    api_key: str,
+    duration: int,
+    fingerprint: str,
+) -> dict[str, Any]:
+    """Use POST for AcoustID lookup so long fingerprints do not break URLs.
+
+    fpcalc can produce very long compressed fingerprints for full-length tracks.
+    Sending those in a GET query string may trigger HTTP 400/URL-length failures
+    and also leaks the whole fingerprint into error messages. POST keeps the
+    request robust and keeps diagnostics readable.
+    """
+    fingerprint_text = str(fingerprint or "")
+    params = {
+        "client": str(api_key or "").strip(),
+        "duration": int(duration),
+        "fingerprint": fingerprint_text,
+        "meta": "recordings+releasegroups+releases+tracks+compress",
+        "format": "json",
+    }
+
+    # Cache by a fingerprint digest instead of storing the full fingerprint in
+    # the cache key. The response body is still cached normally by Avachin.
+    cache_context = dict(params)
+    cache_context["fingerprint_sha256"] = app.hashlib.sha256(
+        fingerprint_text.encode("utf-8", "ignore")
+    ).hexdigest()
+    cache_context["fingerprint_length"] = len(fingerprint_text)
+    cache_context.pop("fingerprint", None)
+    cache_key = self.cache_key(
+        "acoustid",
+        "POST",
+        app.ACOUSTID_LOOKUP_URL,
+        cache_context,
+    )
+    cached = self.cache.get(cache_key, 180)
+    if cached is not None:
+        return cached
+
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            response = self.session().post(
+                app.ACOUSTID_LOOKUP_URL,
+                data=params,
+                headers=self.default_headers,
+                timeout=self.timeout,
+            )
+            if response.status_code in {429, 500, 502, 503, 504}:
+                if attempt + 1 >= 3:
+                    response.raise_for_status()
+                retry_after = response.headers.get("Retry-After")
+                try:
+                    delay = float(retry_after) if retry_after else float(2 ** attempt)
+                except (TypeError, ValueError):
+                    delay = float(2 ** attempt)
+                app.time.sleep(max(1.0, delay))
+                continue
+
+            response.raise_for_status()
+            payload = response.json()
+            if isinstance(payload, dict) and payload.get("status") == "error":
+                error = payload.get("error") or {}
+                if isinstance(error, dict):
+                    message = error.get("message") or error.get("code") or "unknown error"
+                else:
+                    message = str(error) or "unknown error"
+                raise RuntimeError(f"AcoustID API error: {message}")
+            if not isinstance(payload, dict):
+                raise RuntimeError("AcoustID API returned a non-JSON object")
+            self.cache.set(cache_key, payload)
+            return payload
+        except (app.requests.RequestException, ValueError, RuntimeError) as exc:
+            last_error = exc
+            if attempt + 1 < 3:
+                app.time.sleep(float(2 ** attempt))
+
+    raise RuntimeError(f"AcoustID POST request failed: {last_error}")
+
+
 def _patched_load_config(script_dir: Path) -> dict[str, Any]:
     config = _ORIGINAL_LOAD_CONFIG(script_dir)
     _merge_config_file(config, script_dir / "config.local.json")
@@ -90,6 +171,7 @@ def _patched_load_config(script_dir: Path) -> dict[str, Any]:
 _ORIGINAL_LOAD_CONFIG = app.load_config
 app.APP_VERSION = LAUNCHER_VERSION
 app.load_config = _patched_load_config
+app.CatalogClient.acoustid_lookup = _acoustid_lookup_post
 
 
 if __name__ == "__main__":
