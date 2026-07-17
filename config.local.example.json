@@ -1,0 +1,10 @@
+{
+  "acoustid_api_key": "",
+  "acoustid_api_key_env": "ACOUSTID_API_KEY",
+  "online_providers": {
+    "acoustid": true
+  },
+  "fingerprint_identification_enabled": true,
+  "fingerprint_when_uncertain": true,
+  "fingerprint_min_score": 0.72
+}
