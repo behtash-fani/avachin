@@ -4,11 +4,16 @@
 from __future__ import annotations
 
 import csv
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-from tools import summarize_preview_fingerprints as summary
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from tools import summarize_preview_fingerprints as summary  # noqa: E402
 
 
 class PreviewFingerprintSummaryTests(unittest.TestCase):
