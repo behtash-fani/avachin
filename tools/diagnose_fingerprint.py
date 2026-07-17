@@ -3,8 +3,9 @@
 """Diagnose audio recognition for one audio file.
 
 This tool does not rename, move, or modify files. It shows whether Avachin can
-fingerprint a problematic unknown track and whether AcoustID or optional audio
-recognition fallbacks return a usable candidate.
+fingerprint a problematic unknown track and whether the local fingerprint
+library, AcoustID, or optional audio-recognition fallbacks return a usable
+candidate.
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import tools.avachin_launcher as launcher  # noqa: E402
+import tools.local_fingerprint_library as local_fp  # noqa: E402
 
 app = launcher.app
 
@@ -46,9 +48,23 @@ def _print_tags(audio: Any) -> None:
     print(f"  bitrate: {_safe(round((audio.bitrate_bps or 0) / 1000) if audio.bitrate_bps else None)} kbps")
 
 
+def _print_candidate(candidate: Any) -> None:
+    print("Result: MATCH")
+    print(f"  source: {candidate.source}")
+    print(f"  confidence: {candidate.confidence:.2f}")
+    print(f"  title: {_safe(candidate.title)}")
+    print(f"  artist: {_safe(candidate.artist)}")
+    print(f"  album: {_safe(candidate.album)}")
+    print(f"  musicbrainz_recording_id: {_safe(candidate.musicbrainz_recording_id)}")
+    print(f"  fingerprint_score: {_safe(candidate.evidence.get('fingerprint_score'))}")
+    print(f"  local_fingerprint_score: {_safe(candidate.evidence.get('local_fingerprint_score'))}")
+    print(f"  audd_song_link: {_safe(candidate.evidence.get('audd_song_link'))}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check one file with Avachin audio recognition.")
     parser.add_argument("--file", type=Path, help="Path to one MP3 file")
+    parser.add_argument("--local-only", action="store_true", help="Only check the local fingerprint DB; do not use online APIs")
     args = parser.parse_args()
 
     source = args.file
@@ -78,10 +94,12 @@ def main() -> int:
     acoustid_key = str(config.get("acoustid_api_key") or "").strip()
     audd_key = str(config.get("audd_api_token") or "").strip()
     audd_on = app.provider_enabled(config, "audd", False)
+    local_on = bool(config.get("local_fingerprint_library_enabled", True))
 
     print("Avachin fingerprint diagnostic")
     print(f"File: {source}")
     print(f"fpcalc: {fpcalc_path if fpcalc_path else 'NOT FOUND'}")
+    print(f"Local fingerprint DB: {'ON' if local_on else 'OFF'}")
     print(f"AcoustID key: {'FOUND' if acoustid_key else 'NOT FOUND'}")
     print(f"AcoustID provider: {'ON' if client.enable_acoustid_provider else 'OFF'}")
     print(f"AudD token: {'FOUND' if audd_key else 'NOT FOUND'}")
@@ -95,6 +113,38 @@ def main() -> int:
     if fpcalc_path is None:
         print("Result: fingerprint check cannot run because fpcalc was not found.")
         return 2
+
+    if local_on:
+        print("Checking local fingerprint DB...")
+        try:
+            local_match = local_fp.match_file(
+                source,
+                threshold=float(config.get("local_fingerprint_match_threshold", 86.0) or 86.0),
+                duration_tolerance_seconds=float(config.get("local_fingerprint_duration_tolerance_seconds", 8.0) or 8.0),
+                fpcalc_path=Path(fpcalc_path),
+            )
+        except Exception as exc:
+            print(f"Local fingerprint warning: {exc}")
+            local_match = None
+        if local_match:
+            print("Result: MATCH")
+            print("  source: local_fingerprint")
+            print(f"  confidence: {float(local_match.get('score') or 0.0):.2f}")
+            print(f"  title: {_safe(local_match.get('title'))}")
+            print(f"  artist: {_safe(local_match.get('artist'))}")
+            print(f"  album: {_safe(local_match.get('album'))}")
+            print(f"  local_fingerprint_score: {_safe(local_match.get('fingerprint_score'))}")
+            print(f"  duration_diff_seconds: {_safe(local_match.get('duration_diff_seconds'))}")
+            cache.close()
+            return 0
+        print("Local fingerprint DB: no match")
+        print()
+
+    if args.local_only:
+        cache.close()
+        print("Result: no local fingerprint match")
+        return 1
+
     if not acoustid_key and not audd_key:
         print("Result: no audio recognition key is active.")
         print("Run one of these:")
@@ -102,7 +152,7 @@ def main() -> int:
         print("  .\\scripts\\windows\\set_audd_key.bat")
         return 2
     if not client.enable_acoustid_provider and not audd_on:
-        print("Result: all audio recognition providers are OFF.")
+        print("Result: all online audio recognition providers are OFF.")
         return 2
 
     print("Running fpcalc + AcoustID lookup, then optional fallbacks...")
@@ -120,15 +170,7 @@ def main() -> int:
         print("AcoustID may not cover this recording. Add an AudD token or ACRCloud fallback for broader recognition.")
         return 1
 
-    print("Result: MATCH")
-    print(f"  source: {candidate.source}")
-    print(f"  confidence: {candidate.confidence:.2f}")
-    print(f"  title: {_safe(candidate.title)}")
-    print(f"  artist: {_safe(candidate.artist)}")
-    print(f"  album: {_safe(candidate.album)}")
-    print(f"  musicbrainz_recording_id: {_safe(candidate.musicbrainz_recording_id)}")
-    print(f"  fingerprint_score: {_safe(candidate.evidence.get('fingerprint_score'))}")
-    print(f"  audd_song_link: {_safe(candidate.evidence.get('audd_song_link'))}")
+    _print_candidate(candidate)
     return 0
 
 
