@@ -8,8 +8,12 @@ import argparse
 import sys
 from pathlib import Path
 
-from tools import local_fingerprint_library as local_fp
-from tools import partial_fingerprint_store as partial
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from tools import local_fingerprint_library as local_fp  # noqa: E402
+from tools import partial_fingerprint_store as partial  # noqa: E402
 
 
 def print_stats(result: dict[str, int]) -> None:
@@ -57,7 +61,7 @@ def main() -> int:
             print("Result: no local partial fingerprint match")
             return 1
         print("Result: LOCAL PARTIAL MATCH")
-        print(f"  source: local_fingerprint")
+        print("  source: local_fingerprint")
         print(f"  schema_version: {result['schema_version']}")
         print(f"  recording_id: {result['recording_id']}")
         print(f"  confidence: {result['score']:.2f}")
