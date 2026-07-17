@@ -9,9 +9,11 @@ calling the main organizer.
 
 from __future__ import annotations
 
+import gzip
 import json
 import os
 import sys
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import smart_music_organizer as app
 
 
-LAUNCHER_VERSION = "11.4.1"
+LAUNCHER_VERSION = "11.4.2"
 
 
 def _first_env_value(*names: str) -> str:
@@ -80,30 +82,55 @@ def _apply_private_overrides(config: dict[str, Any]) -> None:
         config["spotify_client_secret"] = spotify_client_secret
 
 
+def _safe_acoustid_error(response: Any) -> str:
+    status = getattr(response, "status_code", "?")
+    text = ""
+    try:
+        payload = response.json()
+    except Exception:
+        try:
+            text = str(response.text or "")
+        except Exception:
+            text = ""
+    else:
+        if isinstance(payload, dict):
+            error = payload.get("error") or payload
+            if isinstance(error, dict):
+                code = str(error.get("code") or "").strip()
+                message = str(error.get("message") or "").strip()
+                text = " - ".join(part for part in (code, message) if part)
+            else:
+                text = str(error)
+        else:
+            text = str(payload)
+    text = " ".join(text.split())[:700]
+    return f"HTTP {status}" + (f": {text}" if text else "")
+
+
 def _acoustid_lookup_post(
     self: Any,
     api_key: str,
     duration: int,
     fingerprint: str,
 ) -> dict[str, Any]:
-    """Use POST for AcoustID lookup so long fingerprints do not break URLs.
+    """Use compressed POST for AcoustID lookup.
 
-    fpcalc can produce very long compressed fingerprints for full-length tracks.
-    Sending those in a GET query string may trigger HTTP 400/URL-length failures
-    and also leaks the whole fingerprint into error messages. POST keeps the
-    request robust and keeps diagnostics readable.
+    AcoustID supports GET and POST, but long Chromaprint fingerprints should be
+    sent by POST. The API's multi-value ``meta`` parameter also expects values as
+    whitespace-separated tokens; using literal plus signs can be encoded as
+    ``%2B`` and rejected as a bad request.
     """
     fingerprint_text = str(fingerprint or "")
     params = {
         "client": str(api_key or "").strip(),
-        "duration": int(duration),
+        "duration": str(int(duration)),
         "fingerprint": fingerprint_text,
-        "meta": "recordings+releasegroups+releases+tracks+compress",
+        # Important: spaces are intentional. urllib encodes them as '+', which
+        # is what AcoustID expects for multiple meta tokens in form data.
+        "meta": "recordings releasegroups releases tracks compress",
         "format": "json",
     }
 
-    # Cache by a fingerprint digest instead of storing the full fingerprint in
-    # the cache key. The response body is still cached normally by Avachin.
     cache_context = dict(params)
     cache_context["fingerprint_sha256"] = app.hashlib.sha256(
         fingerprint_text.encode("utf-8", "ignore")
@@ -120,15 +147,28 @@ def _acoustid_lookup_post(
     if cached is not None:
         return cached
 
+    encoded_body = urllib.parse.urlencode(params).encode("utf-8")
+    compressed_body = gzip.compress(encoded_body)
     last_error: Exception | None = None
+
     for attempt in range(3):
         try:
+            headers = dict(self.default_headers)
+            headers.update(
+                {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Encoding": "gzip",
+                }
+            )
             response = self.session().post(
                 app.ACOUSTID_LOOKUP_URL,
-                data=params,
-                headers=self.default_headers,
+                data=compressed_body,
+                headers=headers,
                 timeout=self.timeout,
             )
+
+            # Retry transient server/rate-limit failures. Do not retry 400s; the
+            # response body tells us whether the client key or parameters are bad.
             if response.status_code in {429, 500, 502, 503, 504}:
                 if attempt + 1 >= 3:
                     response.raise_for_status()
@@ -140,7 +180,9 @@ def _acoustid_lookup_post(
                 app.time.sleep(max(1.0, delay))
                 continue
 
-            response.raise_for_status()
+            if response.status_code >= 400:
+                raise RuntimeError(_safe_acoustid_error(response))
+
             payload = response.json()
             if isinstance(payload, dict) and payload.get("status") == "error":
                 error = payload.get("error") or {}
@@ -155,8 +197,10 @@ def _acoustid_lookup_post(
             return payload
         except (app.requests.RequestException, ValueError, RuntimeError) as exc:
             last_error = exc
-            if attempt + 1 < 3:
+            if attempt + 1 < 3 and not str(exc).startswith("HTTP 400"):
                 app.time.sleep(float(2 ** attempt))
+                continue
+            break
 
     raise RuntimeError(f"AcoustID POST request failed: {last_error}")
 
