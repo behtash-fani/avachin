@@ -1,15 +1,18 @@
 @echo off
 chcp 65001 >nul
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 set PYTHONUTF8=1
 cd /d "%~dp0..\.."
 
 set "AUDIO_FILE=%~1"
-if "%AUDIO_FILE%"=="" (
-  set /p AUDIO_FILE=MP3 file path: 
+if not defined AUDIO_FILE (
+  set /p "AUDIO_FILE=MP3 file path: "
 )
 
-if "%AUDIO_FILE%"=="" (
+rem Accept pasted paths with or without surrounding quotes.
+set "AUDIO_FILE=!AUDIO_FILE:"=!"
+
+if not defined AUDIO_FILE (
   echo No file selected.
   exit /b 2
 )
@@ -29,9 +32,10 @@ if not exist "config.json" (
 echo.
 echo Avachin - AcoustID single-file diagnostic
 echo This does not rename, move, or modify the file.
+echo File: !AUDIO_FILE!
 echo.
-py tools\diagnose_fingerprint.py --file "%AUDIO_FILE%"
-set EXIT_CODE=%ERRORLEVEL%
+py tools\diagnose_fingerprint.py --file "!AUDIO_FILE!"
+set "EXIT_CODE=!ERRORLEVEL!"
 echo.
 pause
-exit /b %EXIT_CODE%
+exit /b !EXIT_CODE!
