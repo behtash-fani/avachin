@@ -17,12 +17,11 @@ if not exist "config.json" (
 )
 
 echo.
-echo Smart Music Organizer v8 - FAST OFFLINE PREVIEW
-echo Existing tags and filenames are used. No catalog requests are made.
+echo Avachin v11.4 - FAST OFFLINE PREVIEW
+echo Existing tags and filenames are used. No catalog or AcoustID requests are made.
 echo.
-py smart_music_organizer.py --offline
+py tools\avachin_launcher.py --offline
 set EXIT_CODE=%ERRORLEVEL%
 echo.
 pause
 exit /b %EXIT_CODE%
-
