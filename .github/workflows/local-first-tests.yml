@@ -32,7 +32,11 @@ jobs:
         run: |
           python -m py_compile tools/avachin_launcher.py
           python -m py_compile tools/avachin_local_first_launcher.py
+          python -m py_compile tools/summarize_preview_fingerprints.py
           python -m py_compile tests/test_local_first_launcher.py
+          python -m py_compile tests/test_preview_fingerprint_summary.py
 
       - name: Run local-first regression tests
-        run: python tests/test_local_first_launcher.py
+        run: |
+          python tests/test_local_first_launcher.py
+          python tests/test_preview_fingerprint_summary.py
