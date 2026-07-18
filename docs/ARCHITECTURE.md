@@ -8,6 +8,8 @@
 
 `tools/avachin_status.py` is the machine-readable diagnostics boundary for desktop, mobile-facing adapters, and packaging. It returns a versioned JSON document and never returns provider credentials.
 
+`tools/avachin_operation.py` is the stable frontend execution facade. Its larger subprocess implementation lives in `tools/_avachin_operation_core.py`; the facade normalizes terminal summaries into accurate versioned events and prevents zero-valued counters from becoming false warning/error events.
+
 Internal feature launchers remain separate so each behavior can be tested and rolled back independently:
 
 ```text
@@ -33,6 +35,12 @@ The status API is safe to call before an operation starts. It exposes:
 - readiness flags and non-fatal warnings.
 
 Existing fingerprint and provider-usage databases are opened in SQLite read-only mode. A status check does not create, migrate, or update either database.
+
+## Structured operations
+
+The operation facade launches Preview, Apply, bulk-index Preview, or bulk-index Apply in a child process. It concurrently drains stdout and stderr, publishes JSONL events, and supports cancellation without exposing credentials.
+
+Events include lifecycle, phase, progress, artifact, repair, summary, warning, error, cancellation, and completion records. Numeric result lines such as `Skipped: 0` and `Errors safely rolled back / failed: 0` are represented as `summary` events with `status: ok`, allowing frontends to display accurate health without parsing English text.
 
 ## Identification order
 

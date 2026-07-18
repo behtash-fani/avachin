@@ -30,7 +30,16 @@ py tools\avachin_status.py --json
 py tools\avachin_status.py --json --compact
 ```
 
-The status API reports tool availability, fingerprint database counts, configured provider readiness, audio-repair readiness, and the local AudD budget without returning credentials. Existing SQLite databases are opened read-only.
+Structured frontend operations:
+
+```powershell
+py tools\avachin_operation.py organizer-preview --root "C:\Music"
+py tools\avachin_operation.py organizer-apply --root "C:\Music"
+py tools\avachin_operation.py bulk-index-preview --root "C:\Music"
+py tools\avachin_operation.py bulk-index-apply --root "C:\Music"
+```
+
+The operation API emits one versioned JSON object per line. Zero-valued summary counters are emitted as normal `summary` events rather than false warnings/errors. The implementation runs in a child process so frontend crashes, listener failures, cancellation, or one operation failure do not corrupt the frontend process.
 
 Windows launchers are available in `scripts/windows/`:
 
