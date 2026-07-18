@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "name": "Avachin P5-08 acceptance baseline",
-  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget and frontend-contract acceptance scenarios.",
+  "name": "Avachin repeatable acceptance baseline",
+  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget, recovery and frontend-contract acceptance scenarios.",
   "scenarios": [
     {
       "id": "local-first-unknown",
@@ -88,10 +88,19 @@
       ]
     },
     {
+      "id": "backup-restore-sandbox",
+      "title": "One-command backup and sandbox restore",
+      "category": "recovery",
+      "description": "Verifies consistent SQLite snapshots, manifest checksums, dry-run behavior, sandbox restore, path safety and external-target authorization.",
+      "test_files": [
+        "tests/test_backup_restore.py"
+      ]
+    },
+    {
       "id": "public-entrypoints",
       "title": "Canonical public entry points",
       "category": "architecture",
-      "description": "Verifies scripts, status, operations and Windows launchers use stable public facades and one version source.",
+      "description": "Verifies scripts, status, operations, backup/restore and Windows launchers use stable public facades and one version source.",
       "test_files": [
         "tests/test_public_entrypoints.py"
       ]

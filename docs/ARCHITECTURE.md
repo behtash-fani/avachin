@@ -10,7 +10,9 @@
 
 `tools/avachin_operation.py` is the stable frontend execution facade. Its larger subprocess implementation lives in `tools/_avachin_operation_core.py`; the facade normalizes terminal summaries into accurate versioned events and prevents zero-valued counters from becoming false warning/error events.
 
-`tools/run_acceptance.py` is the stable P5-08 acceptance facade. It consumes the versioned manifest under `tests/acceptance/`, runs each scenario in isolated Python processes, protects declared fixture paths by hash and size, and writes machine-readable JSON/CSV reports.
+`tools/run_acceptance.py` is the stable acceptance facade. It consumes the versioned manifest under `tests/acceptance/`, runs each scenario in isolated Python processes, protects declared fixture paths by hash and size, and writes machine-readable JSON/CSV reports.
+
+`tools/avachin_backup.py` is the P0-01 recovery boundary. It creates a versioned ZIP snapshot of project files, local configuration, application-data databases, reports, and configured external state. Restore validates paths and checksums before resolving any write target and is dry-run unless `--apply` is explicit.
 
 Internal feature launchers remain separate so each behavior can be tested and rolled back independently:
 
@@ -79,11 +81,27 @@ Repair publishes structured events for future GUI progress views. Listener error
 
 The organizer identifies and plans the complete run before changing the library. Apply operations use a journal, avoid overwriting existing files, produce reports, and write an undo manifest outside the selected music folder.
 
+## Backup and restore safety
+
+The backup archive has a versioned `backup-manifest.json`. Every payload entry records its logical group, relative path, original external path when relevant, byte size, and SHA-256 checksum. Project code comes from Git-tracked files with a conservative fallback when Git is unavailable; `config.local.json` is included explicitly.
+
+SQLite databases are materialized through SQLite's online backup API, so a live WAL database becomes one consistent database image. WAL, SHM, journal files, and previous backup archives are excluded from the payload.
+
+Restore performs these gates before writing:
+
+1. Validate the manifest schema and supported groups.
+2. Reject absolute paths, traversal, duplicate members, mismatched group paths, and undeclared payload members.
+3. Recalculate the size and SHA-256 of every ZIP member.
+4. Resolve targets below the selected project, application-data, reports, or Sandbox external root.
+5. Require explicit authorization before restoring an original absolute external target.
+
+Dry-run writes only a JSON plan. Apply creates a pre-restore backup, writes each file through a temporary sibling followed by atomic replacement, and verifies the restored checksum. Extra target files are not deleted. The complete operating procedure is documented in `docs/BACKUP_RESTORE.md`.
+
 ## Acceptance baseline
 
-The acceptance manifest maps the previously independent regression tests into product-level scenarios for Unknown/local-first resolution, recording identity, online-to-offline learning, partial fingerprinting, bulk indexing and duplicate handling, AudD budget protection, temporary repair, status output, and operation events.
+The acceptance manifest maps independent regression tests into product-level scenarios for Unknown/local-first resolution, recording identity, online-to-offline learning, partial fingerprinting, bulk indexing and duplicate handling, AudD budget protection, temporary repair, status output, operation events, and backup/restore recovery.
 
-Each test file still runs in its own subprocess. This preserves the existing CI isolation guarantee and prevents monkey-patches or module state from leaking between scenarios. Reports include Avachin version, Git commit, Python/platform details, scenario timing, exit codes, captured output, missing fixture paths, and protected-file mutations.
+Each test file runs in its own subprocess. This preserves the existing CI isolation guarantee and prevents monkey-patches or module state from leaking between scenarios. Reports include Avachin version, Git commit, Python/platform details, scenario timing, exit codes, captured output, missing fixture paths, and protected-file mutations.
 
 Public CI fixtures are generated or mocked. Real Windows audio fixtures remain machine-local and can be attached through a local manifest that declares `required_paths` and `protected_paths` without committing copyrighted audio or credentials.
 
