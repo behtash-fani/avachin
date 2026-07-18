@@ -127,6 +127,28 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertIn("backup", completed.stdout.casefold())
         self.assertIn("restore", completed.stdout.casefold())
 
+    def test_benchmark_help_runs(self) -> None:
+        completed = self.run_python(
+            "tools/avachin_benchmark.py",
+            "--help",
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        output = completed.stdout.casefold()
+        self.assertIn("repeatable audio benchmark corpus", output)
+        self.assertIn("bootstrap", output)
+        self.assertIn("calibrate", output)
+
+    def test_full_benchmark_pipeline_help_runs(self) -> None:
+        completed = self.run_python(
+            "tools/run_benchmark_pipeline.py",
+            "--help",
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        output = completed.stdout.casefold()
+        self.assertIn("offline preview", output)
+        self.assertIn("zero-false thresholds", output)
+        self.assertIn("--allow-online", output)
+
     def test_windows_launchers_use_only_canonical_entrypoints(
         self,
     ) -> None:
@@ -155,6 +177,12 @@ class PublicEntrypointTests(unittest.TestCase):
         restore = (scripts / "restore_dry_run.bat").read_text(
             encoding="utf-8"
         )
+        benchmark = (scripts / "benchmark.bat").read_text(
+            encoding="utf-8"
+        )
+        full_benchmark = (
+            scripts / "run_full_benchmark.bat"
+        ).read_text(encoding="utf-8")
 
         self.assertIn("tools\\avachin_runtime.py", preview)
         self.assertIn(
@@ -184,6 +212,12 @@ class PublicEntrypointTests(unittest.TestCase):
         )
         self.assertIn("--dry-run", restore)
         self.assertNotIn("--apply", restore)
+        self.assertIn("tools\\avachin_benchmark.py", benchmark)
+        self.assertIn(
+            "tools\\run_benchmark_pipeline.py",
+            full_benchmark,
+        )
+        self.assertNotIn("--apply", full_benchmark)
         for launcher in (preview, apply, status):
             self.assertIn(
                 "from tools.version import AVACHIN_VERSION",
@@ -201,6 +235,16 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertTrue(config["audio_repair_enabled"])
         self.assertTrue(
             config["audd_request_budget_enabled"]
+        )
+
+    def test_benchmark_example_manifest_is_valid_json(self) -> None:
+        path = PROJECT_ROOT / "benchmark" / "manifest.example.json"
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["schema_version"], 1)
+        self.assertGreaterEqual(len(manifest["transforms"]), 10)
+        self.assertEqual(
+            len({item["recording_id"] for item in manifest["references"]}),
+            len(manifest["references"]),
         )
 
     def test_acceptance_manifest_is_valid_json(self) -> None:
@@ -231,6 +275,10 @@ class PublicEntrypointTests(unittest.TestCase):
         )
         self.assertIn(
             "explainable-detection-contract",
+            scenario_ids,
+        )
+        self.assertIn(
+            "official-benchmark-framework",
             scenario_ids,
         )
 
