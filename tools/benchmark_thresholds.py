@@ -4,10 +4,16 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
 from tools.benchmark_metrics import EvaluationRow
+
+DEFAULT_IDENTITY_VALUES = (86.0, 88.0, 90.0, 92.0, 94.0, 96.0, 98.0)
+DEFAULT_AUDIO_VALUES = (86.0, 88.0, 90.0, 92.0, 94.0, 96.0, 98.0)
+DEFAULT_METADATA_VALUES = (80.0, 85.0, 90.0, 95.0)
+DEFAULT_MARGIN_VALUES = (0.0, 1.0, 2.0, 3.0, 4.0, 5.0)
+DEFAULT_REVIEW_VALUES = (60.0, 70.0, 80.0)
 
 
 @dataclass(frozen=True)
@@ -97,26 +103,51 @@ def score_profile(
     rows: Sequence[EvaluationRow],
     profile: ThresholdProfile,
 ) -> CalibrationScore:
-    decisions = [(row, classify(row, profile)) for row in rows]
-    auto_rows = [item for item in decisions if item[1] == "AUTO_APPLY"]
+    auto_apply_total = 0
+    correct_auto_apply = 0
+    false_auto_apply = 0
+    review_total = 0
+    reject_total = 0
+    for row in rows:
+        decision = classify(row, profile)
+        if decision == "AUTO_APPLY":
+            auto_apply_total += 1
+            if row.correct:
+                correct_auto_apply += 1
+            else:
+                false_auto_apply += 1
+        elif decision == "REVIEW":
+            review_total += 1
+        else:
+            reject_total += 1
     return CalibrationScore(
         profile=profile,
         total=len(rows),
-        auto_apply_total=len(auto_rows),
-        correct_auto_apply=sum(row.correct for row, _ in auto_rows),
-        false_auto_apply=sum(not row.correct for row, _ in auto_rows),
-        review_total=sum(decision == "REVIEW" for _, decision in decisions),
-        reject_total=sum(decision == "REJECT" for _, decision in decisions),
+        auto_apply_total=auto_apply_total,
+        correct_auto_apply=correct_auto_apply,
+        false_auto_apply=false_auto_apply,
+        review_total=review_total,
+        reject_total=reject_total,
     )
 
 
-def _range(start: float, stop: float, step: float) -> list[float]:
-    values: list[float] = []
-    current = start
-    while current <= stop + 1e-9:
-        values.append(round(current, 4))
-        current += step
-    return values
+def search_space_size(
+    *,
+    identity_values: Sequence[float],
+    audio_values: Sequence[float],
+    metadata_values: Sequence[float],
+    margin_values: Sequence[float],
+    review_values: Sequence[float],
+) -> int:
+    return sum(
+        1
+        for identity in identity_values
+        for _audio in audio_values
+        for _metadata in metadata_values
+        for _margin in margin_values
+        for review in review_values
+        if review <= identity
+    )
 
 
 def calibrate(
@@ -131,32 +162,34 @@ def calibrate(
     validation = [row for row in rows if row.split == "validation"] or list(rows)
     if not validation:
         raise ValueError("threshold calibration requires evaluation rows")
-    identity_values = list(identity_values or _range(80, 100, 2))
-    audio_values = list(audio_values or _range(80, 100, 2))
-    metadata_values = list(metadata_values or _range(80, 100, 4))
-    margin_values = list(margin_values or _range(0, 10, 1))
-    review_values = list(review_values or _range(50, 90, 5))
-    candidates: list[CalibrationScore] = []
-    for identity in identity_values:
-        for audio in audio_values:
-            for metadata in metadata_values:
-                for margin in margin_values:
-                    for review in review_values:
+    identities = tuple(identity_values or DEFAULT_IDENTITY_VALUES)
+    audios = tuple(audio_values or DEFAULT_AUDIO_VALUES)
+    metadata_scores = tuple(metadata_values or DEFAULT_METADATA_VALUES)
+    margins = tuple(margin_values or DEFAULT_MARGIN_VALUES)
+    reviews = tuple(review_values or DEFAULT_REVIEW_VALUES)
+    if not all((identities, audios, metadata_scores, margins, reviews)):
+        raise ValueError("threshold calibration grids must not be empty")
+
+    safe: list[CalibrationScore] = []
+    for identity in identities:
+        for audio in audios:
+            for metadata in metadata_scores:
+                for margin in margins:
+                    for review in reviews:
                         if review > identity:
                             continue
-                        candidates.append(
-                            score_profile(
-                                validation,
-                                ThresholdProfile(
-                                    identity_min=float(identity),
-                                    audio_min=float(audio),
-                                    metadata_min=float(metadata),
-                                    partial_margin_min=float(margin),
-                                    review_min=float(review),
-                                ),
-                            )
+                        score = score_profile(
+                            validation,
+                            ThresholdProfile(
+                                identity_min=float(identity),
+                                audio_min=float(audio),
+                                metadata_min=float(metadata),
+                                partial_margin_min=float(margin),
+                                review_min=float(review),
+                            ),
                         )
-    safe = [item for item in candidates if item.false_auto_apply == 0]
+                        if score.false_auto_apply == 0:
+                            safe.append(score)
     if not safe:
         raise RuntimeError("no threshold profile achieved zero False Auto-Apply")
     safe.sort(
@@ -188,6 +221,13 @@ def calibration_report(
         "selection_rule": (
             "False Auto-Apply must equal zero; then maximize correct "
             "auto-applies and minimize review volume."
+        ),
+        "default_search_space": search_space_size(
+            identity_values=DEFAULT_IDENTITY_VALUES,
+            audio_values=DEFAULT_AUDIO_VALUES,
+            metadata_values=DEFAULT_METADATA_VALUES,
+            margin_values=DEFAULT_MARGIN_VALUES,
+            review_values=DEFAULT_REVIEW_VALUES,
         ),
         "best": best.to_dict(),
         "safe_profile_count": len(safe_profiles),
