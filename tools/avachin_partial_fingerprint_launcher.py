@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Avachin v11.9 runtime for local recognition of mid-song clips.
+"""Avachin v12.0 runtime for local-first recognition and guarded AudD fallback.
 
 Full-track Local-first matching stays first. If it misses, the runtime compares
 the query against overlapping Schema V3 fingerprint segments before any online
 provider is allowed to run. Trusted online learning also indexes segments for
-future clip recognition.
+future clip recognition. Real AudD HTTP attempts are protected by a persistent
+local request budget.
 """
 
 from __future__ import annotations
@@ -18,13 +19,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-import tools.avachin_online_auto_learn_launcher as auto_learn  # noqa: E402
+import tools.avachin_audd_budget_launcher as auto_learn  # noqa: E402
 from tools import partial_fingerprint_store as partial_store  # noqa: E402
 
 app = auto_learn.app
 base_launcher = auto_learn.local_first.launcher
 fingerprint_library = auto_learn.fingerprint_library
-LAUNCHER_VERSION = "11.9"
+LAUNCHER_VERSION = "12.0"
 
 _ORIGINAL_IDENTIFY_BY_LOCAL = getattr(
     base_launcher._identify_by_local_fingerprint,

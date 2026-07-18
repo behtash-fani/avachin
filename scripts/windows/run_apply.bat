@@ -15,7 +15,7 @@ if not exist "config.json" (
 )
 
 echo.
-echo Avachin v11.9 - LOCAL-FIRST PARTIAL-AUDIO SAFE APPLY
+echo Avachin v12.0 - LOCAL-FIRST PARTIAL-AUDIO SAFE APPLY
 echo Select the ROOT of your complete music library.
 echo.
 echo The program will:
@@ -27,6 +27,7 @@ echo   5. Use crash-safe transactions and a live journal
 echo   6. Keep cover/lyrics/cue/playlist sidecars with albums
 echo   7. Create a complete undo manifest outside the library
 echo   8. Use AcoustID and AudD only for audio still unknown locally
+echo   9. Protect real AudD requests with the local request budget
 echo.
 echo No per-file confirmation will be requested.
 echo.

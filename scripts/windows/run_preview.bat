@@ -15,13 +15,14 @@ if not exist "config.json" (
 )
 
 echo.
-echo Avachin v11.9 - LOCAL-FIRST PARTIAL-AUDIO PREVIEW
+echo Avachin v12.0 - LOCAL-FIRST PARTIAL-AUDIO PREVIEW
 echo Select the ROOT of your complete music library.
 echo.
 echo This run performs identification and planning, then writes a report.
 echo Full tracks and mid-song clips are checked against the local database first.
 echo Trusted online results for uncertain files are saved and segment-indexed locally.
 echo AcoustID and AudD are used only when the audio is still unknown locally.
+echo Real AudD requests are protected by the local request budget.
 echo No music file will be changed.
 echo.
 py tools\avachin_partial_fingerprint_launcher.py
