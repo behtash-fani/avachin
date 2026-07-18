@@ -30,6 +30,8 @@ jobs:
 
       - name: Compile changed Python files
         run: |
+          python -m py_compile tools/audd_usage_guard.py
+          python -m py_compile tools/avachin_audd_budget_launcher.py
           python -m py_compile tools/avachin_launcher.py
           python -m py_compile tools/avachin_local_first_launcher.py
           python -m py_compile tools/avachin_online_auto_learn_launcher.py
@@ -43,6 +45,7 @@ jobs:
           python -m py_compile tools/partial_fingerprint_library.py
           python -m py_compile tools/partial_fingerprint_store.py
           python -m py_compile tools/summarize_preview_fingerprints.py
+          python -m py_compile tests/test_audd_budget_guard.py
           python -m py_compile tests/test_bulk_index_library.py
           python -m py_compile tests/test_create_unknown_test_copy.py
           python -m py_compile tests/test_fingerprint_schema_v2.py
@@ -53,6 +56,7 @@ jobs:
 
       - name: Run regression tests
         run: |
+          python tests/test_audd_budget_guard.py
           python tests/test_bulk_index_library.py
           python tests/test_create_unknown_test_copy.py
           python tests/test_fingerprint_schema_v2.py
