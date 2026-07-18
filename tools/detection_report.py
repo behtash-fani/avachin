@@ -37,8 +37,11 @@ def _atomic_text(path: Path, content: str) -> None:
     temporary.replace(path)
 
 
-def _rejected_runtime_result(result: Any) -> dict[str, Any]:
-    return {
+def _rejected_runtime_result(
+    result: Any,
+    query_seconds: float | None = None,
+) -> dict[str, Any]:
+    payload = {
         "schema_version": DETECTION_SCHEMA_VERSION,
         "source_path": str(
             getattr(result, "source_path", "") or ""
@@ -68,14 +71,19 @@ def _rejected_runtime_result(result: Any) -> dict[str, Any]:
             getattr(result, "error", "") or ""
         ),
     }
+    if query_seconds is not None:
+        payload["query_seconds"] = round(float(query_seconds), 6)
+    return payload
 
 
 def detection_rows(
     runtime_results: Iterable[Any],
     detections: Mapping[str, DetectionResult],
+    query_timings: Mapping[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
+    timings = query_timings or {}
 
     for runtime in runtime_results:
         if str(
@@ -87,11 +95,14 @@ def detection_rows(
         )
         key = canonical_source_key(source_path)
         detection = detections.get(key)
+        timing = timings.get(key)
         if detection is None:
-            rows.append(_rejected_runtime_result(runtime))
+            rows.append(_rejected_runtime_result(runtime, timing))
             continue
 
         payload = detection.to_dict()
+        if timing is not None:
+            payload["query_seconds"] = round(float(timing), 6)
         payload["runtime_status"] = str(
             getattr(runtime, "status", "") or ""
         )
@@ -105,7 +116,11 @@ def detection_rows(
 
     for key, detection in detections.items():
         if key not in seen:
-            rows.append(detection.to_dict())
+            payload = detection.to_dict()
+            timing = timings.get(key)
+            if timing is not None:
+                payload["query_seconds"] = round(float(timing), 6)
+            rows.append(payload)
     return rows
 
 
@@ -146,6 +161,7 @@ def _flat_row(payload: Mapping[str, Any]) -> dict[str, Any]:
         "segment_coverage": evidence.get("segment_coverage"),
         "offset_seconds": evidence.get("offset_seconds"),
         "candidate_margin": evidence.get("candidate_margin"),
+        "query_seconds": payload.get("query_seconds"),
         "consensus_sources": ",".join(
             str(value)
             for value in (
@@ -173,9 +189,10 @@ def write_detection_reports(
     detections: Mapping[str, DetectionResult],
     *,
     avachin_version: str,
+    query_timings: Mapping[str, float] | None = None,
 ) -> tuple[Path, Path, dict[str, Any]]:
     report_dir = Path(report_dir)
-    rows = detection_rows(runtime_results, detections)
+    rows = detection_rows(runtime_results, detections, query_timings)
     counts = {
         decision.value: sum(
             row.get("decision") == decision.value
