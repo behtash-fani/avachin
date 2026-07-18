@@ -28,5 +28,10 @@
   "fingerprint_when_uncertain": true,
   "fingerprint_min_score": 0.72,
   "audd_cache_days": 30,
-  "audd_request_timeout_seconds": 45
+  "audd_request_timeout_seconds": 45,
+  "audd_request_budget_enabled": true,
+  "audd_request_budget_limit": 300,
+  "audd_request_budget_id": "manual-300",
+  "audd_request_budget_fail_closed": true,
+  "audd_request_budget_db_path": ""
 }
