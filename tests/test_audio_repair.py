@@ -212,7 +212,8 @@ class AudioRepairTests(unittest.TestCase):
             timeout=30,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
-        self.assertIn("without modifying the original audio", completed.stdout)
+        normalized_help = " ".join(completed.stdout.split())
+        self.assertIn("without modifying the original audio", normalized_help)
 
 
 if __name__ == "__main__":
