@@ -111,7 +111,7 @@
       "id": "official-benchmark-framework",
       "title": "Reference corpus, transforms, metrics and zero-false calibration",
       "category": "benchmark",
-      "description": "Verifies safe corpus bootstrap, hard-negative identity isolation, deterministic transforms, Precision/Recall metrics, query timing and zero-False-Auto-Apply threshold calibration.",
+      "description": "Verifies safe corpus bootstrap, hard-negative identity isolation, deterministic transforms, Precision/Recall metrics, query timing, one-command offline Preview and zero-False-Auto-Apply threshold calibration.",
       "test_files": [
         "tests/test_benchmark_bootstrap.py",
         "tests/test_benchmark_contract.py",
@@ -120,6 +120,7 @@
         "tests/test_benchmark_metrics.py",
         "tests/test_benchmark_thresholds.py",
         "tests/test_benchmark_cli.py",
+        "tests/test_benchmark_pipeline.py",
         "tests/test_detection_query_timing.py"
       ]
     },

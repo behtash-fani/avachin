@@ -13,6 +13,7 @@ Avachin is a local-first music organizer for Windows-focused MP3 libraries. It i
 - Restore is dry-run by default and validates every manifest path and checksum before writing.
 - Every MP3 receives one explainable `LOCAL_MATCH`, `AUTO_LEARN`, `REVIEW`, or `REJECT` decision.
 - Benchmark release thresholds must keep `False Auto-Apply = 0` on the reviewed validation corpus.
+- The full benchmark runner is hard-coded to organizer Preview and runs offline unless online access is explicitly enabled.
 
 ## Canonical entry points
 
@@ -55,7 +56,35 @@ Every Candidate is adapted to a versioned `DetectionResult` with separate audio,
 
 ## Official benchmark
 
-Bootstrap a reviewable local corpus from the fingerprint database, generate deterministic transforms, run Preview, evaluate the detection artifact, and calibrate conservative thresholds:
+The normal Windows workflow is one command:
+
+```powershell
+scripts\windows\run_full_benchmark.bat
+```
+
+Equivalent Python command:
+
+```powershell
+py tools\run_benchmark_pipeline.py
+```
+
+On the first run, the pipeline automatically bootstraps up to 100 trusted references from the local fingerprint database when `benchmark/manifest.json` does not exist. Later runs reuse the reviewed manifest. To deliberately rebuild it:
+
+```powershell
+py tools\run_benchmark_pipeline.py --refresh-corpus --limit 100
+```
+
+The pipeline validates stable Recording identities, generates deterministic transforms, starts only `organizer-preview`, captures Operation events, copies the DetectionResult artifacts, computes official metrics, and calibrates a bounded zero-false threshold search. Online providers are disabled by default, so the run measures local recognition and does not consume AudD budget. `--allow-online` is an explicit opt-in.
+
+Every run gets a self-contained directory:
+
+```text
+reports/benchmark/run-YYYYMMDD-HHMMSS-microseconds/
+```
+
+It contains manifest snapshots, generated-manifest metadata, Operation JSONL events, DetectionResult JSON/CSV, benchmark JSON/CSV, threshold profile, and the final pipeline report. Exit code `0` means the zero-False-Auto-Apply gate passed; exit code `2` means the run completed but the gate failed.
+
+Individual benchmark stages remain available:
 
 ```powershell
 py tools\avachin_benchmark.py bootstrap --limit 100
@@ -84,7 +113,7 @@ Repeatable acceptance baseline:
 py tools\run_acceptance.py
 ```
 
-The acceptance runner executes local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, backup/restore, DetectionResult, official benchmark, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
+The acceptance runner executes local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, backup/restore, DetectionResult, official benchmark, one-command benchmark pipeline, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
 
 Windows launchers are available in `scripts/windows/`:
 
@@ -98,6 +127,7 @@ Windows launchers are available in `scripts/windows/`:
 - `backup.bat`
 - `restore_dry_run.bat`
 - `benchmark.bat`
+- `run_full_benchmark.bat`
 
 The older `avachin_*_launcher.py` files are internal feature layers retained for compatibility. New callers should use the canonical entry points above.
 
@@ -148,4 +178,4 @@ All tests run in isolated Python processes in CI to prevent runtime monkey-patch
 
 ## Current version
 
-The public version is stored only in `tools/version.py`. Avachin v12.7 adds the official local benchmark framework, deterministic audio transforms, Recording-aware hard-negative scoring, per-file query timing, and zero-False-Auto-Apply threshold calibration.
+The public version is stored only in `tools/version.py`. Avachin v12.8 adds the one-command, Preview-only, offline-by-default benchmark pipeline and a bounded 3,528-profile zero-false calibration search suitable for real corpora.

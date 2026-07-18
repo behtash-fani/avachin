@@ -1,6 +1,6 @@
 # Avachin acceptance corpus
 
-This directory is Avachin's repeatable acceptance baseline. The manifest groups the regression tests that represent real product paths: Unknown/local-first resolution, recording schema, online-to-offline learning, partial fingerprinting, bulk indexing and duplicates, AudD budget safety, temporary audio repair, runtime status, structured operations, backup/restore recovery, explainable DetectionResult decisions, official benchmark scoring, and canonical entry points.
+This directory is Avachin's repeatable acceptance baseline. The manifest groups the regression tests that represent real product paths: Unknown/local-first resolution, recording schema, online-to-offline learning, partial fingerprinting, bulk indexing and duplicates, AudD budget safety, temporary audio repair, runtime status, structured operations, backup/restore recovery, explainable DetectionResult decisions, official benchmark scoring, the one-command benchmark pipeline, and canonical entry points.
 
 Run all scenarios from the repository root:
 
@@ -38,4 +38,4 @@ A scenario may declare `required_paths` and `protected_paths`:
 
 This lets Windows validation protect real source MP3 files while keeping the public corpus deterministic and license-safe. The recovery scenario creates a temporary project, config, report and live SQLite database, validates dry-run, restores them into an isolated sandbox, and verifies the recovered database content. The detection scenario validates confidence separation, four-way decisions, Candidate evidence attachment, compatibility with the legacy CSV, and the nested/flat detection artifacts used by future Review UI.
 
-The official benchmark scenario validates the complete P5 framework without copyrighted audio: read-only SQLite bootstrap, source-file preservation, deterministic sample IDs and seeded transforms, stable Recording identity for Live/Studio hard negatives, query-time capture, Precision/Recall and False Auto-Apply metrics, CLI planning/evaluation, and threshold calibration that may select only profiles with zero False Auto-Apply.
+The official benchmark scenario validates the complete P5 framework without copyrighted audio: read-only SQLite bootstrap, source-file preservation, deterministic sample IDs and seeded transforms, stable Recording identity for Live/Studio hard negatives, query-time capture, Precision/Recall and False Auto-Apply metrics, CLI planning/evaluation, and bounded threshold calibration. It also proves the full pipeline is Preview-only and offline by default, preserves all reports when the gate fails, and emits a `no-safe-profile` artifact instead of crashing when no threshold combination can eliminate a perfect false match.
