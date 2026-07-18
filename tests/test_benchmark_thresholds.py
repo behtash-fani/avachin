@@ -13,9 +13,15 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from tools.benchmark_metrics import EvaluationRow  # noqa: E402
 from tools.benchmark_thresholds import (  # noqa: E402
+    DEFAULT_AUDIO_VALUES,
+    DEFAULT_IDENTITY_VALUES,
+    DEFAULT_MARGIN_VALUES,
+    DEFAULT_METADATA_VALUES,
+    DEFAULT_REVIEW_VALUES,
     ThresholdProfile,
     calibrate,
     classify,
+    search_space_size,
 )
 
 
@@ -105,6 +111,18 @@ class BenchmarkThresholdTests(unittest.TestCase):
             metadata=96,
         )
         self.assertEqual(classify(row, profile), "AUTO_APPLY")
+
+    def test_default_search_space_is_bounded_for_real_corpora(self) -> None:
+        self.assertEqual(
+            search_space_size(
+                identity_values=DEFAULT_IDENTITY_VALUES,
+                audio_values=DEFAULT_AUDIO_VALUES,
+                metadata_values=DEFAULT_METADATA_VALUES,
+                margin_values=DEFAULT_MARGIN_VALUES,
+                review_values=DEFAULT_REVIEW_VALUES,
+            ),
+            3528,
+        )
 
 
 if __name__ == "__main__":
