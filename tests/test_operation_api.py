@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import threading
@@ -151,6 +152,27 @@ class OperationApiTests(unittest.TestCase):
                 command_override=[sys.executable, "-u", "-c", "print('ok')"],
             )
             self.assertEqual(result["status"], "completed")
+
+    def test_cli_invalid_root_returns_json_failure(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(PROJECT_ROOT / "tools" / "avachin_operation.py"),
+                "organizer-preview",
+                "--root",
+                str(PROJECT_ROOT / "missing-root"),
+            ],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+        )
+        self.assertEqual(completed.returncode, 2)
+        payload = json.loads(completed.stdout.strip().splitlines()[-1])
+        self.assertEqual(payload["event_type"], "failed")
+        self.assertEqual(payload["status"], "failed")
 
     def test_process_start_failure_is_reported(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
