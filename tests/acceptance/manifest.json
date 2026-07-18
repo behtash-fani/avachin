@@ -125,6 +125,26 @@
       ]
     },
     {
+      "id": "benchmark-review-fast-path",
+      "title": "Human-confirmed reference quarantine and no-rerun scoring",
+      "category": "benchmark",
+      "description": "Verifies contaminated references require explicit review, stay auditable and can be excluded while saved DetectionResult artifacts are re-scored without audio regeneration or Preview.",
+      "test_files": [
+        "tests/test_benchmark_review.py",
+        "tests/test_benchmark_review_entrypoint.py"
+      ]
+    },
+    {
+      "id": "windows-preview-gui",
+      "title": "Windows Preview-only GUI controller",
+      "category": "frontend-contract",
+      "description": "Verifies the desktop shell consumes only Status/Operation APIs, runs organizer-preview in a worker thread, supports cancellation and exposes no Apply operation.",
+      "test_files": [
+        "tests/test_gui_controller.py",
+        "tests/test_gui_entrypoint.py"
+      ]
+    },
+    {
       "id": "public-entrypoints",
       "title": "Canonical public entry points",
       "category": "architecture",
