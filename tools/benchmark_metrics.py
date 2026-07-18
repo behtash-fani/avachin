@@ -10,7 +10,7 @@ import os
 import statistics
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from tools.benchmark_contract import (
     AUTO_APPLY_DECISIONS,
@@ -41,7 +41,7 @@ def predicted_identity_keys(detection: Mapping[str, Any]) -> tuple[str, ...]:
     external = evidence.get("external_identifiers")
     if not isinstance(external, Mapping):
         external = {}
-    keys: list[str] = []
+    stable_keys: list[str] = []
     prefixes = {
         "avachin_recording": "avachin",
         "isrc": "isrc",
@@ -52,11 +52,12 @@ def predicted_identity_keys(detection: Mapping[str, Any]) -> tuple[str, ...]:
     for field, prefix in prefixes.items():
         value = str(external.get(field) or "").strip()
         if value:
-            keys.append(normalize_identity_key(f"{prefix}:{value}"))
+            stable_keys.append(normalize_identity_key(f"{prefix}:{value}"))
+    stable_keys = list(dict.fromkeys(key for key in stable_keys if key))
+    if stable_keys:
+        return tuple(stable_keys)
     text_key = text_identity_key(detection.get("artist"), detection.get("title"))
-    if text_key:
-        keys.append(text_key)
-    return tuple(dict.fromkeys(key for key in keys if key))
+    return (text_key,) if text_key else ()
 
 
 @dataclass(frozen=True)
@@ -117,16 +118,15 @@ def evaluate_detections(
         detection = detection_by_path.get(path_key(sample_path), {})
         predicted_keys = predicted_identity_keys(detection)
         expected_keys = tuple(sample.expected_identity_keys)
-        expected_set = set(expected_keys)
-        correct = bool(expected_set.intersection(predicted_keys))
+        correct = bool(set(expected_keys).intersection(predicted_keys))
         predicted_recording_id = ""
         for key in predicted_keys:
             owner = owners.get(key)
             if owner:
                 predicted_recording_id = owner
                 break
-        identified = bool(predicted_keys) and str(detection.get("decision") or "") != "REJECT"
         decision = str(detection.get("decision") or "REJECT").strip().upper()
+        identified = bool(predicted_keys) and decision != "REJECT"
         auto_apply = decision in AUTO_APPLY_DECISIONS
         evidence = detection.get("evidence") if isinstance(detection.get("evidence"), Mapping) else {}
         confidence = detection.get("confidence") if isinstance(detection.get("confidence"), Mapping) else {}
