@@ -5,7 +5,7 @@
 The original media file is never renamed, overwritten, retagged, or deleted.
 When a decoder/fingerprint tool rejects damaged audio, this module may create a
 short-lived re-encoded analysis copy, validate it, and expose that copy through
-an isolated context manager.  Callers keep processing other files when repair
+an isolated context manager. Callers keep processing other files when repair
 fails.
 
 The public API is intentionally GUI-friendly:
@@ -22,6 +22,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -31,6 +32,8 @@ from pathlib import Path
 from typing import Any, Callable, Iterator
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import smart_music_organizer as app  # noqa: E402
 
@@ -440,7 +443,7 @@ def main() -> int:
                 print(f"Retained repaired copy: {result.repaired_path}")
         return 0
     except Exception as exc:
-        print(f"Audio repair failed safely: {exc}", file=os.sys.stderr)
+        print(f"Audio repair failed safely: {exc}", file=sys.stderr)
         return 2
 
 
