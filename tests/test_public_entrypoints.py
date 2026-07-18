@@ -57,18 +57,26 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertIn("isolated process", completed.stdout.casefold())
         self.assertIn("jsonl", completed.stdout.casefold())
 
+    def test_acceptance_help_runs(self) -> None:
+        completed = self.run_python("tools/run_acceptance.py", "--help")
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("acceptance corpus", completed.stdout.casefold())
+        self.assertIn("json/csv", completed.stdout.casefold())
+
     def test_windows_launchers_use_only_canonical_entrypoints(self) -> None:
         preview = (PROJECT_ROOT / "scripts" / "windows" / "run_preview.bat").read_text(encoding="utf-8")
         apply = (PROJECT_ROOT / "scripts" / "windows" / "run_apply.bat").read_text(encoding="utf-8")
         bulk_preview = (PROJECT_ROOT / "scripts" / "windows" / "preview_local_index.bat").read_text(encoding="utf-8")
         bulk_apply = (PROJECT_ROOT / "scripts" / "windows" / "apply_local_index.bat").read_text(encoding="utf-8")
         status = (PROJECT_ROOT / "scripts" / "windows" / "status.bat").read_text(encoding="utf-8")
+        acceptance = (PROJECT_ROOT / "scripts" / "windows" / "run_acceptance.bat").read_text(encoding="utf-8")
 
         self.assertIn("tools\\avachin_runtime.py", preview)
         self.assertIn("tools\\avachin_runtime.py --apply", apply)
         self.assertIn("tools\\avachin_bulk_index.py", bulk_preview)
         self.assertIn("tools\\avachin_bulk_index.py", bulk_apply)
         self.assertIn("tools\\avachin_status.py", status)
+        self.assertIn("tools\\run_acceptance.py", acceptance)
         for launcher in (preview, apply, status):
             self.assertIn("from tools.version import AVACHIN_VERSION", launcher)
             self.assertIn("v%AVACHIN_VERSION%", launcher)
@@ -80,6 +88,15 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertTrue(config["local_fingerprint_partial_enabled"])
         self.assertTrue(config["audio_repair_enabled"])
         self.assertTrue(config["audd_request_budget_enabled"])
+
+    def test_acceptance_manifest_is_valid_json(self) -> None:
+        path = PROJECT_ROOT / "tests" / "acceptance" / "manifest.json"
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["schema_version"], 1)
+        scenario_ids = [scenario["id"] for scenario in manifest["scenarios"]]
+        self.assertEqual(len(scenario_ids), len(set(scenario_ids)))
+        self.assertIn("operation-contract", scenario_ids)
+        self.assertIn("audio-repair-no-original-change", scenario_ids)
 
 
 if __name__ == "__main__":
