@@ -24,10 +24,12 @@ class FakeOperationRunner:
         artifact_dir: Path,
         *,
         predicted_id: str = "rec-1",
+        confidence: float = 94,
         emit_artifact: bool = True,
     ):
         self.artifact_dir = artifact_dir
         self.predicted_id = predicted_id
+        self.confidence = confidence
         self.emit_artifact = emit_artifact
         self.request = None
 
@@ -51,10 +53,10 @@ class FakeOperationRunner:
                     "decision": "LOCAL_MATCH",
                     "query_seconds": 0.025,
                     "confidence": {
-                        "audio": 94,
-                        "metadata": 94,
-                        "identity": 94,
-                        "overall": 94,
+                        "audio": self.confidence,
+                        "metadata": self.confidence,
+                        "identity": self.confidence,
+                        "overall": self.confidence,
                     },
                     "evidence": {
                         "provider": "local_fingerprint",
@@ -226,6 +228,35 @@ class BenchmarkPipelineTests(unittest.TestCase):
             )
             self.assertGreater(max(blocking_thresholds), 94)
 
+    def test_perfect_false_match_preserves_no_safe_profile_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            corpus = root / "corpus"
+            manifest = self.write_manifest(corpus)
+            runner = FakeOperationRunner(
+                root / "operation-artifacts",
+                predicted_id="wrong-recording",
+                confidence=100,
+            )
+            result = run_pipeline(
+                corpus_root=corpus,
+                manifest_path=manifest,
+                report_root=root / "reports",
+                run_dir=root / "reports" / "run-test-no-safe",
+                operation_runner=runner,
+            )
+            self.assertEqual(result["status"], "gate-failed")
+            self.assertEqual(result["calibration"]["status"], "no-safe-profile")
+            threshold = json.loads(
+                Path(result["artifacts"]["threshold_profile"]).read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(threshold["status"], "no-safe-profile")
+            self.assertTrue(
+                Path(result["artifacts"]["pipeline_report"]).is_file()
+            )
+
     def test_missing_detection_artifact_fails_without_apply(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -245,6 +276,9 @@ class BenchmarkPipelineTests(unittest.TestCase):
             self.assertEqual(result["status"], "failed")
             self.assertIn("without a detection-report", result["error"])
             self.assertEqual(runner.request.mode, "preview")
+            self.assertTrue(
+                Path(result["artifacts"]["pipeline_report"]).is_file()
+            )
 
 
 if __name__ == "__main__":
