@@ -11,6 +11,7 @@ Avachin is a local-first music organizer for Windows-focused MP3 libraries. It i
 - AudD requests are protected by a persistent local request budget.
 - A failure for one file does not stop processing the remaining library.
 - Restore is dry-run by default and validates every manifest path and checksum before writing.
+- Every MP3 receives one explainable `LOCAL_MATCH`, `AUTO_LEARN`, `REVIEW`, or `REJECT` decision.
 
 ## Canonical entry points
 
@@ -42,6 +43,15 @@ py tools\avachin_operation.py bulk-index-apply --root "C:\Music"
 
 The operation API emits one versioned JSON object per line. Zero-valued summary counters are emitted as normal `summary` events rather than false warnings/errors. The implementation runs in a child process so frontend crashes, listener failures, cancellation, or one operation failure do not corrupt the frontend process.
 
+Explainable detection reports:
+
+```text
+detection-report.json
+detection-report.csv
+```
+
+Every Candidate is adapted to a versioned `DetectionResult` with separate audio, metadata, identity, and overall confidence. Evidence includes provider, fingerprint score, segment coverage, offset, candidate margin, metadata agreement, consensus, stable identifiers, and decision reason. The original `report.csv` remains compatible. See `docs/DETECTION_CONTRACT.md` for the policy and schema.
+
 One-command backup and restore validation:
 
 ```powershell
@@ -57,7 +67,7 @@ Repeatable acceptance baseline:
 py tools\run_acceptance.py
 ```
 
-The acceptance runner executes local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, backup/restore, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
+The acceptance runner executes local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, backup/restore, DetectionResult, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
 
 Windows launchers are available in `scripts/windows/`:
 
@@ -98,7 +108,7 @@ Artist / Singles / Title - Artist.mp3
 
 ```text
 smart_music_organizer.py     Core organizer engine
-tools/                       Runtime, fingerprint, recovery, repair and diagnostics
+tools/                       Runtime, detection, fingerprint, recovery, repair and diagnostics
 scripts/windows/             User-facing Windows launchers
 reference_data/              Curated artist and track registries
 tests/                       Regression and acceptance tests
@@ -119,4 +129,4 @@ All tests run in isolated Python processes in CI to prevent runtime monkey-patch
 
 ## Current version
 
-The public version is stored only in `tools/version.py`. Avachin v12.5 completes P0-01 with one-command backup, checksum-verified restore dry-run, and proven Sandbox recovery.
+The public version is stored only in `tools/version.py`. Avachin v12.6 adds the versioned DetectionResult, explainable confidence/evidence, four-way decision policy, and GUI-ready detection reports.
