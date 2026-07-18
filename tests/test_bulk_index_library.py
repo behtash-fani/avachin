@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 import subprocess
 import sys
@@ -16,6 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from tools import bulk_index_library as bulk  # noqa: E402
+from tools import fingerprint_store_v2 as store  # noqa: E402
 
 
 def audio_info(title: str, artist: str, album: str = "Singles"):
@@ -57,12 +59,52 @@ class BulkIndexLibraryTests(unittest.TestCase):
 
             self.assertEqual(summary["files_scanned"], 2)
             self.assertEqual(summary["eligible"], 1)
+            self.assertEqual(summary["metadata_repair_eligible"], 0)
             self.assertEqual(summary["indexed"], 0)
             self.assertEqual(summary["counts"]["eligible"], 1)
             self.assertEqual(summary["counts"]["skipped"], 1)
             self.assertFalse(db_path.exists())
             self.assertTrue((report_dir / "report.csv").exists())
             self.assertTrue((report_dir / "summary.json").exists())
+
+    def test_missing_album_is_inferred_from_organized_folder(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            artist_root = Path(temp_dir) / "Chaartaar"
+            album_dir = artist_root / "Baaraan Toee"
+            album_dir.mkdir(parents=True)
+            song = album_dir / "Asheghaaneh Tanhaast - Chaartaar.mp3"
+            song.write_bytes(b"audio")
+
+            with mock.patch.object(
+                bulk.app,
+                "read_mp3",
+                return_value=audio_info("Asheghaaneh Tanhaast", "Chaartaar", ""),
+            ):
+                metadata, reason = bulk.trusted_metadata(song, artist_root)
+
+            self.assertIsNotNone(metadata)
+            assert metadata is not None
+            self.assertEqual(metadata["album"], "Baaraan Toee")
+            self.assertEqual(reason, "trusted-tags+album-from-folder")
+
+    def test_singles_folder_is_not_stored_as_album(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            artist_root = Path(temp_dir) / "Artist"
+            singles = artist_root / "Singles"
+            singles.mkdir(parents=True)
+            song = singles / "Song - Artist.mp3"
+            song.write_bytes(b"audio")
+
+            with mock.patch.object(
+                bulk.app,
+                "read_mp3",
+                return_value=audio_info("Song", "Artist", ""),
+            ):
+                metadata, _ = bulk.trusted_metadata(song, artist_root)
+
+            self.assertIsNotNone(metadata)
+            assert metadata is not None
+            self.assertEqual(metadata["album"], "")
 
     def test_apply_indexes_unique_audio_and_skips_batch_duplicate(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -105,10 +147,106 @@ class BulkIndexLibraryTests(unittest.TestCase):
 
             self.assertEqual(summary["eligible"], 3)
             self.assertEqual(summary["indexed"], 2)
+            self.assertEqual(summary["repaired"], 0)
             self.assertEqual(summary["counts"]["indexed"], 2)
             self.assertEqual(summary["counts"]["duplicate-audio-skipped"], 1)
             self.assertEqual(len(learned_calls), 2)
             self.assertEqual(summary["segment_stats"]["schema_version"], 3)
+
+    def test_preview_and_apply_repair_existing_empty_album_without_refingerprinting(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            artist_root = Path(temp_dir) / "Chaartaar"
+            album_dir = artist_root / "Baaraan Toee"
+            album_dir.mkdir(parents=True)
+            song = album_dir / "Asheghaaneh Tanhaast - Chaartaar.mp3"
+            song.write_bytes(b"audio")
+            db_path = Path(temp_dir) / "db.sqlite3"
+
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            store.ensure_schema(conn)
+            raw = [((index * 2654435761) ^ 12345) & 0xFFFFFFFF for index in range(900)]
+            with conn:
+                old_recording_id = store.upsert_recording(
+                    conn,
+                    artist="Chaartaar",
+                    title="Asheghaaneh Tanhaast",
+                    album="",
+                    source="bulk-index:trusted-tags",
+                    confidence=98.0,
+                )
+                audio_file_id = store.upsert_audio_file(
+                    conn,
+                    recording_id=old_recording_id,
+                    audio_sha256="audio-hash",
+                    source_path=str(song),
+                    duration_seconds=180.0,
+                )
+                store.replace_fingerprint(
+                    conn,
+                    recording_id=old_recording_id,
+                    audio_file_id=audio_file_id,
+                    fingerprint_sha256="fingerprint-hash",
+                    fingerprint_frames=len(raw),
+                    raw_fingerprint_json=json.dumps(raw),
+                    duration_seconds=180.0,
+                    source="bulk-index:trusted-tags",
+                    confidence=98.0,
+                )
+            conn.close()
+
+            with mock.patch.object(
+                bulk.app,
+                "read_mp3",
+                return_value=audio_info("Asheghaaneh Tanhaast", "Chaartaar", ""),
+            ):
+                preview = bulk.index_library(
+                    artist_root,
+                    apply=False,
+                    db_path=db_path,
+                    report_dir=Path(temp_dir) / "preview-report",
+                )
+                applied = bulk.index_library(
+                    artist_root,
+                    apply=True,
+                    db_path=db_path,
+                    report_dir=Path(temp_dir) / "apply-report",
+                    segment_backfill_func=lambda path: {"schema_version": 3, "segments": 1},
+                )
+
+            self.assertEqual(preview["eligible"], 0)
+            self.assertEqual(preview["metadata_repair_eligible"], 1)
+            self.assertEqual(preview["counts"]["metadata-repair-eligible"], 1)
+            self.assertEqual(applied["indexed"], 0)
+            self.assertEqual(applied["repaired"], 1)
+            self.assertEqual(applied["counts"]["metadata-repaired"], 1)
+            self.assertTrue(Path(applied["backup_path"]).exists())
+
+            conn = sqlite3.connect(db_path)
+            try:
+                row = conn.execute(
+                    """
+                    SELECT rec.id, rec.album, af.recording_id, fp.recording_id
+                    FROM audio_files AS af
+                    JOIN recordings AS rec ON rec.id = af.recording_id
+                    JOIN fingerprints AS fp ON fp.audio_file_id = af.id
+                    WHERE af.source_path = ?
+                    """,
+                    (str(song),),
+                ).fetchone()
+                old_count = conn.execute(
+                    "SELECT COUNT(*) FROM recordings WHERE id = ?",
+                    (old_recording_id,),
+                ).fetchone()[0]
+            finally:
+                conn.close()
+
+            self.assertIsNotNone(row)
+            assert row is not None
+            self.assertEqual(row[1], "Baaraan Toee")
+            self.assertEqual(row[0], row[2])
+            self.assertEqual(row[0], row[3])
+            self.assertEqual(old_count, 0)
 
     def test_existing_source_path_is_not_reindexed(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -136,6 +274,7 @@ class BulkIndexLibraryTests(unittest.TestCase):
                 )
 
             self.assertEqual(summary["eligible"], 0)
+            self.assertEqual(summary["metadata_repair_eligible"], 0)
             self.assertEqual(summary["counts"]["already-indexed-path"], 1)
 
     def test_sqlite_backup_contains_committed_data(self) -> None:
