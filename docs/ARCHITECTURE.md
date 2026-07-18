@@ -14,7 +14,9 @@
 
 `tools/avachin_backup.py` is the P0-01 recovery boundary. It creates a versioned ZIP snapshot of project files, local configuration, application-data databases, reports, and configured external state. Restore validates paths and checksums before resolving any write target and is dry-run unless `--apply` is explicit.
 
-`tools/avachin_benchmark.py` is the P5 benchmark facade. It bootstraps a reviewable local corpus from the read-only fingerprint database, validates the corpus contract, plans or materializes deterministic transforms, evaluates DetectionResult artifacts, and calibrates threshold profiles under a hard zero-False-Auto-Apply gate.
+`tools/avachin_benchmark.py` exposes the individual P5 benchmark stages: bootstrap, validation, transform generation, evaluation, and calibration.
+
+`tools/run_benchmark_pipeline.py` is the canonical real-corpus benchmark entry point. It orchestrates the complete flow through `tools/benchmark_pipeline.py`, but the operation request is hard-coded to `organizer-preview`. It runs offline unless online access is explicitly enabled.
 
 Internal feature launchers remain separate so each behavior can be tested and rolled back independently:
 
@@ -75,7 +77,7 @@ Detection JSON and CSV paths are printed through the existing `JSON summary:` an
 
 `tools/detection_report.py` preserves the original organizer CSV and writes nested JSON plus flat CSV reports. Contract fields and measured query time are also stored under `candidate.evidence`, so Apply journals retain the exact decision used during the run.
 
-The v12.7 contract remains observational. It calculates `safe_to_apply` but does not yet override the legacy Apply execution path. Enforcement belongs after benchmark thresholds and Review/Undo flows are proven on the reviewed validation corpus.
+The v12.8 contract remains observational. It calculates `safe_to_apply` but does not yet override the legacy Apply execution path. Enforcement belongs after real-corpus benchmark thresholds and Review/Undo flows are proven.
 
 ## Official benchmark
 
@@ -89,7 +91,20 @@ The benchmark boundary is intentionally local-only. Public source control contai
 
 `tools/benchmark_metrics.py` joins generated samples with `detection-report.json` by normalized source path. Correctness is Recording-aware and uses unique Avachin, ISRC, MusicBrainz, Spotify, Apple, or unambiguous text identities. It computes Precision, Recall, Unknown/Review/Reject rates, Auto-Apply precision/recall, False Auto-Apply, hard-negative confusions, per-transform results, and query-time mean/p50/p95.
 
-`tools/benchmark_thresholds.py` searches identity, audio, metadata, partial-margin, and Review thresholds. Profiles with any False Auto-Apply are discarded first. The selected profile maximizes correct Auto-Apply coverage only among zero-false profiles and is written as evidence, not applied automatically to configuration.
+`tools/benchmark_thresholds.py` evaluates a bounded 3,528-profile grid across identity, audio, metadata, partial-margin, and Review thresholds. Profiles with any False Auto-Apply are discarded first. The selected profile maximizes correct Auto-Apply coverage only among zero-false profiles and is written as evidence, not applied automatically to configuration.
+
+`tools/benchmark_pipeline.py` creates a unique generated sample root and a unique report directory for every real run. It reuses a reviewed manifest or bootstraps one when missing, materializes the transforms, invokes the public OperationRunner with only `organizer-preview`, captures versioned JSONL events, selects the exact `detection-report.json` artifact, copies all supporting artifacts, evaluates the corpus, and calibrates thresholds.
+
+The pipeline is fail-safe:
+
+- online providers are disabled by default;
+- no Apply option exists in the pipeline request or Windows launcher;
+- an incomplete Preview or missing DetectionResult artifact creates a failed pipeline report;
+- a nonzero False Auto-Apply result creates `gate-failed` while preserving all artifacts;
+- if no threshold profile can remove every false automatic decision, `threshold-profile.json` records `no-safe-profile` instead of crashing;
+- threshold output never rewrites configuration automatically.
+
+Every self-contained run contains manifest snapshots, generated-manifest metadata, Operation events, DetectionResult JSON/CSV, benchmark JSON/CSV, threshold evidence, and the final pipeline report.
 
 The official release gate is:
 
@@ -97,7 +112,7 @@ The official release gate is:
 False Auto-Apply = 0
 ```
 
-A benchmark evaluation with a nonzero False Auto-Apply count returns a failing status. This prevents recall improvements from silently weakening safe-auto-apply guarantees.
+A benchmark evaluation with a nonzero False Auto-Apply count returns exit code `2`. This prevents recall improvements from silently weakening safe-auto-apply guarantees.
 
 ## Local fingerprint storage
 
@@ -147,7 +162,7 @@ The acceptance manifest maps independent regression tests into product-level sce
 
 Each test file runs in its own subprocess. This preserves the existing CI isolation guarantee and prevents monkey-patches or module state from leaking between scenarios. Reports include Avachin version, Git commit, Python/platform details, scenario timing, exit codes, captured output, missing fixture paths, and protected-file mutations.
 
-The benchmark Acceptance scenario uses generated temporary files and SQLite fixtures rather than copyrighted music. It proves read-only bootstrap, source preservation, deterministic transforms, Recording-aware hard-negative scoring, per-file query timing, official metrics, CLI reports, and zero-false threshold calibration.
+The benchmark Acceptance scenario uses generated temporary files and SQLite fixtures rather than copyrighted music. It proves read-only bootstrap, source preservation, deterministic transforms, Recording-aware hard-negative scoring, per-file query timing, official metrics, CLI reports, one-command offline Preview, Gate-pass, Gate-fail, missing-artifact handling, and no-safe-profile preservation.
 
 Public CI fixtures are generated or mocked. Real Windows audio fixtures remain machine-local and can be attached through a local manifest that declares `required_paths` and `protected_paths` without committing copyrighted audio or credentials.
 
