@@ -146,8 +146,11 @@ class TransformSpec:
             raise ValueError("each transform requires transform_id")
         if kind not in ALLOWED_TRANSFORMS:
             raise ValueError(f"unsupported transform kind: {kind!r}")
-        parameters = dict(raw.get("parameters") or {})
-        return cls(transform_id=transform_id, kind=kind, parameters=parameters)
+        return cls(
+            transform_id=transform_id,
+            kind=kind,
+            parameters=dict(raw.get("parameters") or {}),
+        )
 
 
 @dataclass(frozen=True)
@@ -210,12 +213,23 @@ class BenchmarkManifest:
                 "hard_negative_group requires at least two references: "
                 + ", ".join(sorted(invalid_groups))
             )
-        return cls(
+        manifest = cls(
             name=str(raw.get("name") or "Avachin benchmark").strip(),
             seed=int(raw.get("seed") or 0),
             references=references,
             transforms=transforms,
         )
+        for reference in references:
+            unique_keys = [
+                key
+                for key in reference.identity_keys
+                if manifest.identity_owner_map().get(key) == reference.recording_id
+            ]
+            if not unique_keys:
+                raise ValueError(
+                    f"reference {reference.recording_id!r} has no unique identity key"
+                )
+        return manifest
 
     @classmethod
     def load(cls, path: Path) -> "BenchmarkManifest":
@@ -228,14 +242,22 @@ class BenchmarkManifest:
         return {item.recording_id: item for item in self.references}
 
     def identity_owner_map(self) -> dict[str, str]:
-        result: dict[str, str] = {}
+        owners: dict[str, set[str]] = {}
         for reference in self.references:
             for key in reference.identity_keys:
-                owner = result.get(key)
-                if owner and owner != reference.recording_id:
-                    raise ValueError(f"identity key is shared by multiple references: {key}")
-                result[key] = reference.recording_id
-        return result
+                owners.setdefault(key, set()).add(reference.recording_id)
+        return {
+            key: next(iter(recording_ids))
+            for key, recording_ids in owners.items()
+            if len(recording_ids) == 1
+        }
+
+    def ambiguous_identity_keys(self) -> tuple[str, ...]:
+        counts: dict[str, int] = {}
+        for reference in self.references:
+            for key in reference.identity_keys:
+                counts[key] = counts.get(key, 0) + 1
+        return tuple(sorted(key for key, count in counts.items() if count > 1))
 
 
 def generated_samples(
@@ -244,8 +266,14 @@ def generated_samples(
     generated_root: str = "generated",
 ) -> tuple[GeneratedSample, ...]:
     samples: list[GeneratedSample] = []
+    owner_map = manifest.identity_owner_map()
     for reference in manifest.references:
         suffix = Path(reference.path).suffix.casefold() or ".mp3"
+        expected_keys = tuple(
+            key
+            for key in reference.identity_keys
+            if owner_map.get(key) == reference.recording_id
+        )
         for transform in manifest.transforms:
             sample_id = stable_sample_id(reference.recording_id, transform.transform_id)
             relative = PurePosixPath(
@@ -264,7 +292,7 @@ def generated_samples(
                     split=reference.split,
                     version=reference.version,
                     hard_negative_group=reference.hard_negative_group,
-                    expected_identity_keys=reference.identity_keys,
+                    expected_identity_keys=expected_keys,
                     parameters=dict(transform.parameters),
                 )
             )
@@ -280,6 +308,7 @@ def write_generated_manifest(
         "schema_version": BENCHMARK_SCHEMA_VERSION,
         "name": manifest.name,
         "seed": manifest.seed,
+        "ambiguous_identity_keys": list(manifest.ambiguous_identity_keys()),
         "references": [asdict(item) for item in manifest.references],
         "samples": [item.to_dict() for item in samples],
     }
@@ -287,5 +316,8 @@ def write_generated_manifest(
         reference["identity_keys"] = list(reference["identity_keys"])
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return path
