@@ -10,9 +10,14 @@ summary lines into accurate versioned events for desktop and mobile adapters.
 from __future__ import annotations
 
 import re
-from typing import Any
+import sys
+from pathlib import Path
 
-from tools import _avachin_operation_core as _core
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from tools import _avachin_operation_core as _core  # noqa: E402
 
 OperationRequest = _core.OperationRequest
 OperationEvent = _core.OperationEvent
