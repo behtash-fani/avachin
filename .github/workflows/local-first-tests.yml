@@ -28,45 +28,15 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 
-      - name: Compile changed Python files
-        run: |
-          python -m py_compile tools/audio_repair.py
-          python -m py_compile tools/audd_usage_guard.py
-          python -m py_compile tools/avachin_audd_budget_launcher.py
-          python -m py_compile tools/avachin_launcher.py
-          python -m py_compile tools/avachin_local_first_launcher.py
-          python -m py_compile tools/avachin_online_auto_learn_launcher.py
-          python -m py_compile tools/avachin_partial_fingerprint_launcher.py
-          python -m py_compile tools/avachin_resilient_bulk_index_launcher.py
-          python -m py_compile tools/bulk_index_library.py
-          python -m py_compile tools/create_mid_song_test_clip.py
-          python -m py_compile tools/create_unknown_test_copy.py
-          python -m py_compile tools/diagnose_local_first_file.py
-          python -m py_compile tools/fingerprint_store_v2.py
-          python -m py_compile tools/local_fingerprint_library.py
-          python -m py_compile tools/partial_fingerprint_library.py
-          python -m py_compile tools/partial_fingerprint_store.py
-          python -m py_compile tools/summarize_preview_fingerprints.py
-          python -m py_compile tests/test_audio_repair.py
-          python -m py_compile tests/test_audd_budget_guard.py
-          python -m py_compile tests/test_bulk_index_library.py
-          python -m py_compile tests/test_create_unknown_test_copy.py
-          python -m py_compile tests/test_fingerprint_schema_v2.py
-          python -m py_compile tests/test_local_first_launcher.py
-          python -m py_compile tests/test_online_auto_learn_launcher.py
-          python -m py_compile tests/test_partial_fingerprint_v3.py
-          python -m py_compile tests/test_preview_fingerprint_summary.py
+      - name: Compile project Python
+        run: python -m compileall -q smart_music_organizer.py configure.py tools tests
 
-      - name: Run audio repair tests
-        run: python tests/test_audio_repair.py
-
-      - name: Run existing regression tests
+      - name: Run isolated regression tests
+        shell: bash
         run: |
-          python tests/test_audd_budget_guard.py
-          python tests/test_bulk_index_library.py
-          python tests/test_create_unknown_test_copy.py
-          python tests/test_fingerprint_schema_v2.py
-          python tests/test_local_first_launcher.py
-          python tests/test_online_auto_learn_launcher.py
-          python tests/test_partial_fingerprint_v3.py
-          python tests/test_preview_fingerprint_summary.py
+          set -euo pipefail
+          for test_file in tests/test_*.py; do
+            echo "::group::${test_file}"
+            python "${test_file}"
+            echo "::endgroup::"
+          done
