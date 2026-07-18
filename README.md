@@ -5,13 +5,14 @@ Avachin is a local-first music organizer for Windows-focused MP3 libraries. It i
 ## Safety guarantees
 
 - Preview is the default mode.
-- Original music files are never modified during fingerprint indexing or temporary audio repair.
+- Original music files are never modified during fingerprint indexing, benchmark bootstrap, transforms, or temporary audio repair.
 - Apply uses crash-safe operations, reports, and undo manifests.
 - Decoder-damaged audio is repaired only as a validated temporary analysis copy.
 - AudD requests are protected by a persistent local request budget.
 - A failure for one file does not stop processing the remaining library.
 - Restore is dry-run by default and validates every manifest path and checksum before writing.
 - Every MP3 receives one explainable `LOCAL_MATCH`, `AUTO_LEARN`, `REVIEW`, or `REJECT` decision.
+- Benchmark release thresholds must keep `False Auto-Apply = 0` on the reviewed validation corpus.
 
 ## Canonical entry points
 
@@ -50,7 +51,23 @@ detection-report.json
 detection-report.csv
 ```
 
-Every Candidate is adapted to a versioned `DetectionResult` with separate audio, metadata, identity, and overall confidence. Evidence includes provider, fingerprint score, segment coverage, offset, candidate margin, metadata agreement, consensus, stable identifiers, and decision reason. The original `report.csv` remains compatible. See `docs/DETECTION_CONTRACT.md` for the policy and schema.
+Every Candidate is adapted to a versioned `DetectionResult` with separate audio, metadata, identity, and overall confidence. Evidence includes provider, fingerprint score, segment coverage, offset, candidate margin, metadata agreement, consensus, stable identifiers, decision reason, and measured per-file query time. The original `report.csv` remains compatible. See `docs/DETECTION_CONTRACT.md` for the policy and schema.
+
+## Official benchmark
+
+Bootstrap a reviewable local corpus from the fingerprint database, generate deterministic transforms, run Preview, evaluate the detection artifact, and calibrate conservative thresholds:
+
+```powershell
+py tools\avachin_benchmark.py bootstrap --limit 100
+py tools\avachin_benchmark.py validate
+py tools\avachin_benchmark.py generate --plan-only
+py tools\avachin_benchmark.py generate
+py tools\avachin_operation.py organizer-preview --root "benchmark\generated"
+py tools\avachin_benchmark.py evaluate --detection-report "C:\path\detection-report.json" --corpus-root "benchmark"
+py tools\avachin_benchmark.py calibrate
+```
+
+The framework supports clean references, 5/10/15-second clips, bitrate changes, trim, leading silence, seeded noise, volume changes, and explicit Live/Studio/Remix/Remaster hard negatives. Reports include Precision, Recall, Unknown/Review/Reject rates, Auto-Apply precision/recall, hard-negative confusions, query-time mean/p50/p95, and per-transform metrics. Evaluation fails when False Auto-Apply is nonzero. Real reference audio, generated files, local manifests, and reports are ignored by Git. See `benchmark/README.md`.
 
 One-command backup and restore validation:
 
@@ -67,7 +84,7 @@ Repeatable acceptance baseline:
 py tools\run_acceptance.py
 ```
 
-The acceptance runner executes local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, backup/restore, DetectionResult, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
+The acceptance runner executes local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, backup/restore, DetectionResult, official benchmark, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
 
 Windows launchers are available in `scripts/windows/`:
 
@@ -80,6 +97,7 @@ Windows launchers are available in `scripts/windows/`:
 - `run_acceptance.bat`
 - `backup.bat`
 - `restore_dry_run.bat`
+- `benchmark.bat`
 
 The older `avachin_*_launcher.py` files are internal feature layers retained for compatibility. New callers should use the canonical entry points above.
 
@@ -108,7 +126,8 @@ Artist / Singles / Title - Artist.mp3
 
 ```text
 smart_music_organizer.py     Core organizer engine
-tools/                       Runtime, detection, fingerprint, recovery, repair and diagnostics
+tools/                       Runtime, detection, benchmark, fingerprint, recovery, repair and diagnostics
+benchmark/                   Public benchmark schema, workflow and local-only corpus boundary
 scripts/windows/             User-facing Windows launchers
 reference_data/              Curated artist and track registries
 tests/                       Regression and acceptance tests
@@ -129,4 +148,4 @@ All tests run in isolated Python processes in CI to prevent runtime monkey-patch
 
 ## Current version
 
-The public version is stored only in `tools/version.py`. Avachin v12.6 adds the versioned DetectionResult, explainable confidence/evidence, four-way decision policy, and GUI-ready detection reports.
+The public version is stored only in `tools/version.py`. Avachin v12.7 adds the official local benchmark framework, deterministic audio transforms, Recording-aware hard-negative scoring, per-file query timing, and zero-False-Auto-Apply threshold calibration.
