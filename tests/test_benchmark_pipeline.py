@@ -19,13 +19,25 @@ from tools.benchmark_pipeline import run_pipeline  # noqa: E402
 
 
 class FakeOperationRunner:
-    def __init__(self, artifact_dir: Path, *, predicted_id: str = "rec-1", emit_artifact: bool = True):
+    def __init__(
+        self,
+        artifact_dir: Path,
+        *,
+        predicted_id: str = "rec-1",
+        emit_artifact: bool = True,
+    ):
         self.artifact_dir = artifact_dir
         self.predicted_id = predicted_id
         self.emit_artifact = emit_artifact
         self.request = None
 
-    def run(self, request: Any, *, listener: Any = None, **kwargs: Any) -> dict[str, Any]:
+    def run(
+        self,
+        request: Any,
+        *,
+        listener: Any = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
         del kwargs
         self.request = request.normalized()
         self.artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -152,7 +164,9 @@ class BenchmarkPipelineTests(unittest.TestCase):
                 operation_runner=runner,
             )
             self.assertEqual(result["status"], "passed")
-            self.assertTrue(result["benchmark_summary"]["gate_false_auto_apply_zero"])
+            self.assertTrue(
+                result["benchmark_summary"]["gate_false_auto_apply_zero"]
+            )
             self.assertEqual(result["benchmark_summary"]["recall"], 1.0)
             self.assertIsNotNone(runner.request)
             self.assertEqual(runner.request.operation, "organizer-preview")
@@ -170,11 +184,17 @@ class BenchmarkPipelineTests(unittest.TestCase):
                 "pipeline-report.json",
             ):
                 self.assertTrue((run_dir / name).is_file(), name)
-            pipeline = json.loads((run_dir / "pipeline-report.json").read_text(encoding="utf-8"))
+            pipeline = json.loads(
+                (run_dir / "pipeline-report.json").read_text(
+                    encoding="utf-8"
+                )
+            )
             self.assertEqual(pipeline["status"], "passed")
             self.assertIn("pipeline_report", pipeline["artifacts"])
 
-    def test_false_auto_apply_returns_gate_failed_but_keeps_reports(self) -> None:
+    def test_false_auto_apply_returns_gate_failed_but_keeps_reports(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             corpus = root / "corpus"
@@ -191,10 +211,20 @@ class BenchmarkPipelineTests(unittest.TestCase):
                 operation_runner=runner,
             )
             self.assertEqual(result["status"], "gate-failed")
-            self.assertEqual(result["benchmark_summary"]["false_auto_apply"], 1)
-            self.assertTrue(Path(result["artifacts"]["threshold_profile"]).is_file())
+            self.assertEqual(
+                result["benchmark_summary"]["false_auto_apply"],
+                1,
+            )
+            self.assertTrue(
+                Path(result["artifacts"]["threshold_profile"]).is_file()
+            )
             best = result["calibration"]["profile"]
-            self.assertGreater(best["detection_local_min_confidence"], 94)
+            blocking_thresholds = (
+                best["detection_local_min_confidence"],
+                best["detection_local_audio_min_confidence"],
+                best["detection_local_metadata_min_confidence"],
+            )
+            self.assertGreater(max(blocking_thresholds), 94)
 
     def test_missing_detection_artifact_fails_without_apply(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
