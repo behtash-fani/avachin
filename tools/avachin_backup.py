@@ -52,7 +52,7 @@ def utc_now() -> str:
 
 
 def timestamp_token() -> str:
-    return datetime.now().strftime("%Y%m%d-%H%M%S")
+    return datetime.now().strftime("%Y%m%d-%H%M%S-%f")
 
 
 def sha256_file(path: Path) -> str:
