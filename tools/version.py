@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-AVACHIN_VERSION = "12.8"
+AVACHIN_VERSION = "12.9"
 
 
 def display_version() -> str:
