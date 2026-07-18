@@ -5,6 +5,11 @@
 The default mode is a read-only preview. ``--apply`` stores Chromaprints in the
 local Schema V2 database and then backfills Schema V3 partial-audio segments.
 Music files are never renamed, moved, tagged, or otherwise modified.
+
+When an otherwise trusted file has no Album tag, a conservative album name may
+be inferred from the organized folder structure. Existing fingerprints that
+were previously stored with an empty/generic album can be repaired in-place
+without recalculating their acoustic fingerprint.
 """
 
 from __future__ import annotations
@@ -13,11 +18,11 @@ import argparse
 import csv
 import json
 import os
-import shutil
+import re
 import sqlite3
 import sys
 from collections import Counter
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Iterable
@@ -27,6 +32,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import smart_music_organizer as app  # noqa: E402
+from tools import fingerprint_store_v2 as fingerprint_store  # noqa: E402
 from tools import local_fingerprint_library as local_fp  # noqa: E402
 from tools import partial_fingerprint_store as partial_store  # noqa: E402
 
@@ -44,6 +50,15 @@ UNKNOWN_VALUES = {
     "track",
     "track 1",
 }
+GENERIC_ALBUM_DIRECTORIES = {
+    "single",
+    "singles",
+    "misc",
+    "miscellaneous",
+    "unknown album",
+    "_unknown album",
+}
+DISC_DIRECTORY_RE = re.compile(r"^(?:cd|disc|disk)\s*[-_. ]?\s*\d+$", re.IGNORECASE)
 DEFAULT_SKIPPED_DIRECTORIES = {
     "conflicts",
     "_other_files",
@@ -89,11 +104,23 @@ def _is_unknown(value: Any) -> bool:
     return any(marker in text for marker in ("unknown artist", "unknown title", "untitled"))
 
 
+def _album_is_missing(value: Any) -> bool:
+    return _is_unknown(value) or _key(value) in GENERIC_ALBUM_DIRECTORIES
+
+
 def _path_key(path: Path | str) -> str:
     try:
         return os.path.normcase(os.path.abspath(str(path)))
     except Exception:
         return str(path).casefold()
+
+
+def _table_exists(conn: sqlite3.Connection, table_name: str) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name = ?",
+        (table_name,),
+    ).fetchone()
+    return row is not None
 
 
 def _configured_skipped_directories() -> set[str]:
@@ -102,7 +129,12 @@ def _configured_skipped_directories() -> set[str]:
         config = app.load_config(PROJECT_ROOT)
     except Exception:
         config = {}
-    for key in ("duplicates_folder", "other_files_folder", "unknown_artist_folder", "non_vocal_review_folder"):
+    for key in (
+        "duplicates_folder",
+        "other_files_folder",
+        "unknown_artist_folder",
+        "non_vocal_review_folder",
+    ):
         value = _key(config.get(key)) if isinstance(config, dict) else ""
         if value:
             names.add(value)
@@ -133,7 +165,37 @@ def scan_mp3_files(root: Path, *, limit: int | None = None) -> list[Path]:
     return result
 
 
-def trusted_metadata(file_path: Path) -> tuple[dict[str, str] | None, str]:
+def infer_album_from_path(file_path: Path, root: Path, artist: str) -> str:
+    """Infer one album folder without treating Artist/Singles/quarantine as albums."""
+    try:
+        relative_parent = Path(file_path).resolve().parent.relative_to(Path(root).resolve())
+    except (OSError, ValueError):
+        return ""
+
+    parts = [part for part in relative_parent.parts if part not in {"", "."}]
+    if not parts:
+        return ""
+
+    candidate = _text(parts[-1])
+    if DISC_DIRECTORY_RE.match(candidate) and len(parts) >= 2:
+        candidate = _text(parts[-2])
+
+    candidate_key = _key(candidate)
+    if (
+        not candidate
+        or candidate_key == _key(artist)
+        or candidate_key in GENERIC_ALBUM_DIRECTORIES
+        or candidate_key in _configured_skipped_directories()
+    ):
+        return ""
+
+    site_pattern = getattr(app, "SITE_OR_SOURCE_RE", None)
+    if site_pattern is not None and site_pattern.search(candidate):
+        return ""
+    return candidate
+
+
+def trusted_metadata(file_path: Path, root: Path | None = None) -> tuple[dict[str, str] | None, str]:
     try:
         audio = app.read_mp3(file_path)
     except Exception as exc:
@@ -159,27 +221,149 @@ def trusted_metadata(file_path: Path) -> tuple[dict[str, str] | None, str]:
     if site_pattern is not None:
         if site_pattern.search(artist) or site_pattern.search(title):
             return None, "source-or-website-noise-in-tags"
+        if album and site_pattern.search(album):
+            album = ""
 
-    return {"artist": artist, "title": title, "album": album}, "trusted-tags"
+    reason = "trusted-tags"
+    if _album_is_missing(album):
+        album = ""
+    if not album and root is not None:
+        inferred = infer_album_from_path(file_path, root, artist)
+        if inferred:
+            album = inferred
+            reason = "trusted-tags+album-from-folder"
+
+    return {"artist": artist, "title": title, "album": album}, reason
 
 
-def existing_inventory(db_path: Path) -> tuple[set[str], set[str]]:
+def existing_inventory(db_path: Path) -> tuple[dict[str, dict[str, Any]], set[str]]:
     db_path = Path(db_path)
     if not db_path.exists():
-        return set(), set()
+        return {}, set()
+
     conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
     try:
-        table = conn.execute(
-            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='audio_files'"
-        ).fetchone()
-        if table is None:
-            return set(), set()
-        rows = conn.execute("SELECT source_path, audio_sha256 FROM audio_files").fetchall()
+        if not _table_exists(conn, "audio_files"):
+            return {}, set()
+
+        if _table_exists(conn, "recordings"):
+            rows = conn.execute(
+                """
+                SELECT
+                    af.id AS audio_file_id,
+                    af.recording_id,
+                    af.source_path,
+                    af.audio_sha256,
+                    rec.artist,
+                    rec.title,
+                    COALESCE(rec.album, '') AS album
+                FROM audio_files AS af
+                LEFT JOIN recordings AS rec ON rec.id = af.recording_id
+                """
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT source_path, audio_sha256 FROM audio_files"
+            ).fetchall()
     finally:
         conn.close()
-    paths = {_path_key(row[0]) for row in rows if row[0]}
-    hashes = {str(row[1]).strip() for row in rows if row[1]}
-    return paths, hashes
+
+    inventory: dict[str, dict[str, Any]] = {}
+    hashes: set[str] = set()
+    for row in rows:
+        source_path = str(row["source_path"] or "") if "source_path" in row.keys() else ""
+        audio_hash = str(row["audio_sha256"] or "") if "audio_sha256" in row.keys() else ""
+        if audio_hash:
+            hashes.add(audio_hash.strip())
+        if not source_path:
+            continue
+        inventory[_path_key(source_path)] = {
+            "audio_file_id": int(row["audio_file_id"]) if "audio_file_id" in row.keys() and row["audio_file_id"] is not None else 0,
+            "recording_id": str(row["recording_id"] or "") if "recording_id" in row.keys() else "",
+            "source_path": source_path,
+            "audio_sha256": audio_hash.strip(),
+            "artist": str(row["artist"] or "") if "artist" in row.keys() else "",
+            "title": str(row["title"] or "") if "title" in row.keys() else "",
+            "album": str(row["album"] or "") if "album" in row.keys() else "",
+        }
+    return inventory, hashes
+
+
+def metadata_repair_needed(existing: dict[str, Any], metadata: dict[str, str]) -> bool:
+    if not int(existing.get("audio_file_id") or 0) or not str(existing.get("recording_id") or ""):
+        return False
+    if _key(existing.get("artist")) != _key(metadata.get("artist")):
+        return False
+    if _key(existing.get("title")) != _key(metadata.get("title")):
+        return False
+    existing_album = _text(existing.get("album"))
+    target_album = _text(metadata.get("album"))
+    return _album_is_missing(existing_album) and bool(target_album)
+
+
+def repair_existing_metadata(
+    db_path: Path,
+    existing: dict[str, Any],
+    metadata: dict[str, str],
+) -> str:
+    """Move one existing AudioFile/Fingerprint to the corrected recording identity."""
+    audio_file_id = int(existing.get("audio_file_id") or 0)
+    old_recording_id = str(existing.get("recording_id") or "")
+    if not audio_file_id or not old_recording_id:
+        raise RuntimeError("existing inventory row cannot be repaired safely")
+
+    conn = partial_store.connect(Path(db_path))
+    try:
+        with conn:
+            new_recording_id = fingerprint_store.upsert_recording(
+                conn,
+                artist=metadata["artist"],
+                title=metadata["title"],
+                album=metadata["album"],
+                source="bulk-index:path-album-repair",
+                confidence=98.0,
+            )
+            if new_recording_id == old_recording_id:
+                return new_recording_id
+
+            timestamp = fingerprint_store.now_utc()
+            conn.execute(
+                "UPDATE audio_files SET recording_id = ?, updated_at = ? WHERE id = ?",
+                (new_recording_id, timestamp, audio_file_id),
+            )
+            conn.execute(
+                "UPDATE fingerprints SET recording_id = ?, updated_at = ? WHERE audio_file_id = ?",
+                (new_recording_id, timestamp, audio_file_id),
+            )
+            if _table_exists(conn, "fingerprint_segments"):
+                conn.execute(
+                    "UPDATE fingerprint_segments SET recording_id = ? WHERE audio_file_id = ?",
+                    (new_recording_id, audio_file_id),
+                )
+
+            conn.execute(
+                """
+                DELETE FROM recordings
+                WHERE id = ?
+                  AND id <> ?
+                  AND NOT EXISTS (
+                      SELECT 1 FROM audio_files WHERE recording_id = ?
+                  )
+                  AND NOT EXISTS (
+                      SELECT 1 FROM external_ids WHERE recording_id = ?
+                  )
+                """,
+                (
+                    old_recording_id,
+                    new_recording_id,
+                    old_recording_id,
+                    old_recording_id,
+                ),
+            )
+        return new_recording_id
+    finally:
+        conn.close()
 
 
 def backup_database(db_path: Path, backup_root: Path | None = None) -> Path | None:
@@ -234,6 +418,7 @@ def index_library(
     learn_file_func: Callable[..., dict[str, Any]] | None = None,
     hash_file_func: Callable[[Path], str] | None = None,
     segment_backfill_func: Callable[[Path | None], dict[str, int]] | None = None,
+    repair_metadata_func: Callable[[Path, dict[str, Any], dict[str, str]], str] | None = None,
 ) -> dict[str, Any]:
     root = Path(root).resolve()
     db_path = Path(db_path) if db_path else local_fp.local_db_path()
@@ -241,81 +426,114 @@ def index_library(
     learn_file_func = learn_file_func or local_fp.learn_file
     hash_file_func = hash_file_func or local_fp.audio_sha256
     segment_backfill_func = segment_backfill_func or partial_store.ensure_database
+    repair_metadata_func = repair_metadata_func or repair_existing_metadata
 
     files = scan_mp3_files(root, limit=limit)
-    existing_paths, existing_hashes = existing_inventory(db_path)
+    existing_by_path, existing_hashes = existing_inventory(db_path)
     items: list[IndexItem] = []
     candidates: list[tuple[Path, dict[str, str], IndexItem]] = []
+    repairs: list[tuple[dict[str, Any], dict[str, str], IndexItem]] = []
 
     for index, path in enumerate(files, start=1):
-        metadata, reason = trusted_metadata(path)
+        metadata, reason = trusted_metadata(path, root)
         if metadata is None:
             items.append(IndexItem(source_path=str(path), status="skipped", message=reason))
-        elif _path_key(path) in existing_paths:
-            items.append(
-                IndexItem(
+        else:
+            existing = existing_by_path.get(_path_key(path))
+            if existing is not None and metadata_repair_needed(existing, metadata):
+                item = IndexItem(
                     source_path=str(path),
-                    status="already-indexed-path",
+                    status="metadata-repair-eligible" if not apply else "pending-metadata-repair",
                     artist=metadata["artist"],
                     title=metadata["title"],
                     album=metadata["album"],
-                    message="database already contains this source path",
+                    audio_sha256=str(existing.get("audio_sha256") or ""),
+                    recording_id=str(existing.get("recording_id") or ""),
+                    message="existing fingerprint has an empty/generic album; folder album can repair it",
                 )
-            )
-        else:
-            item = IndexItem(
-                source_path=str(path),
-                status="eligible" if not apply else "pending",
-                artist=metadata["artist"],
-                title=metadata["title"],
-                album=metadata["album"],
-                message=reason,
-            )
-            items.append(item)
-            candidates.append((path, metadata, item))
+                items.append(item)
+                repairs.append((existing, metadata, item))
+            elif existing is not None:
+                items.append(
+                    IndexItem(
+                        source_path=str(path),
+                        status="already-indexed-path",
+                        artist=metadata["artist"],
+                        title=metadata["title"],
+                        album=metadata["album"],
+                        audio_sha256=str(existing.get("audio_sha256") or ""),
+                        recording_id=str(existing.get("recording_id") or ""),
+                        message="database already contains this source path",
+                    )
+                )
+            else:
+                item = IndexItem(
+                    source_path=str(path),
+                    status="eligible" if not apply else "pending",
+                    artist=metadata["artist"],
+                    title=metadata["title"],
+                    album=metadata["album"],
+                    message=reason,
+                )
+                items.append(item)
+                candidates.append((path, metadata, item))
         if progress_every > 0 and index % progress_every == 0:
             print(f"  Metadata scan: {index}/{len(files)}")
 
     backup_path: Path | None = None
     indexed = 0
+    repaired = 0
     segment_stats: dict[str, int] | None = None
     seen_hashes = set(existing_hashes)
 
-    if apply and candidates:
+    if apply and (candidates or repairs):
         backup_path = backup_database(db_path)
-        fpcalc_path = fpcalc_path or local_fp.find_fpcalc()
-        for index, (path, metadata, item) in enumerate(candidates, start=1):
+
+        for existing, metadata, item in repairs:
             try:
-                audio_hash = str(hash_file_func(path)).strip()
-                item.audio_sha256 = audio_hash
-                if audio_hash and audio_hash in seen_hashes:
-                    item.status = "duplicate-audio-skipped"
-                    item.message = "identical audio already exists in local database or this batch"
-                    continue
-                learned = learn_file_func(
-                    path,
-                    artist=metadata["artist"],
-                    title=metadata["title"],
-                    album=metadata["album"],
-                    source="bulk-index:trusted-tags",
-                    confidence=98.0,
-                    fpcalc_path=fpcalc_path,
-                    db_path=db_path,
-                )
-                item.status = "indexed"
-                item.recording_id = str(learned.get("recording_id") or "")
-                item.audio_sha256 = str(learned.get("audio_sha256") or audio_hash)
-                item.message = "fingerprint stored"
-                indexed += 1
-                if audio_hash:
-                    seen_hashes.add(audio_hash)
+                new_recording_id = repair_metadata_func(db_path, existing, metadata)
+                item.status = "metadata-repaired"
+                item.recording_id = str(new_recording_id)
+                item.message = "recording album repaired without recalculating the fingerprint"
+                repaired += 1
             except Exception as exc:
                 item.status = "error"
                 item.message = str(exc)
-            if progress_every > 0 and index % progress_every == 0:
-                print(f"  Fingerprint index: {index}/{len(candidates)}")
 
-        if indexed:
+        if candidates:
+            fpcalc_path = fpcalc_path or local_fp.find_fpcalc()
+            for index, (path, metadata, item) in enumerate(candidates, start=1):
+                try:
+                    audio_hash = str(hash_file_func(path)).strip()
+                    item.audio_sha256 = audio_hash
+                    if audio_hash and audio_hash in seen_hashes:
+                        item.status = "duplicate-audio-skipped"
+                        item.message = "identical audio already exists in local database or this batch"
+                        continue
+                    learned = learn_file_func(
+                        path,
+                        artist=metadata["artist"],
+                        title=metadata["title"],
+                        album=metadata["album"],
+                        source="bulk-index:trusted-tags",
+                        confidence=98.0,
+                        fpcalc_path=fpcalc_path,
+                        db_path=db_path,
+                    )
+                    item.status = "indexed"
+                    item.recording_id = str(learned.get("recording_id") or "")
+                    item.audio_sha256 = str(learned.get("audio_sha256") or audio_hash)
+                    item.message = "fingerprint stored"
+                    indexed += 1
+                    if audio_hash:
+                        seen_hashes.add(audio_hash)
+                except Exception as exc:
+                    item.status = "error"
+                    item.message = str(exc)
+                if progress_every > 0 and index % progress_every == 0:
+                    print(f"  Fingerprint index: {index}/{len(candidates)}")
+
+        if indexed or repaired:
             try:
                 segment_stats = segment_backfill_func(db_path)
             except Exception as exc:
@@ -328,7 +546,9 @@ def index_library(
         "db_path": str(db_path),
         "files_scanned": len(files),
         "eligible": len(candidates),
+        "metadata_repair_eligible": len(repairs),
         "indexed": indexed,
+        "repaired": repaired,
         "counts": dict(sorted(counts.items())),
         "backup_path": str(backup_path) if backup_path else "",
         "segment_stats": segment_stats or {},
@@ -344,8 +564,10 @@ def print_summary(summary: dict[str, Any]) -> None:
     print("\n" + "=" * 72)
     print(f"Bulk local fingerprint index: {str(summary['mode']).upper()}")
     print(f"MP3 files scanned: {summary['files_scanned']}")
-    print(f"Eligible trusted-tag files: {summary['eligible']}")
+    print(f"Eligible new fingerprint files: {summary['eligible']}")
+    print(f"Existing metadata repairs eligible: {summary.get('metadata_repair_eligible', 0)}")
     print(f"Fingerprints indexed: {summary['indexed']}")
+    print(f"Existing fingerprints repaired: {summary.get('repaired', 0)}")
     for status, count in summary.get("counts", {}).items():
         print(f"  {status}: {count}")
     if summary.get("backup_path"):
@@ -360,7 +582,7 @@ def print_summary(summary: dict[str, Any]) -> None:
     print(f"CSV report: {summary['csv_report']}")
     print(f"JSON summary: {summary['json_report']}")
     if summary["mode"] == "preview":
-        print("\nNo fingerprint was stored. Run again with --apply after reviewing the report.")
+        print("\nNo fingerprint was stored or repaired. Run again with --apply after reviewing the report.")
     else:
         print("\nNo music file was changed.")
 
@@ -370,7 +592,7 @@ def main() -> int:
         description="Preview or safely index an already-organized MP3 library into Avachin's local database."
     )
     parser.add_argument("--root", type=Path, help="Root folder of the organized MP3 library")
-    parser.add_argument("--apply", action="store_true", help="Store eligible fingerprints after creating a DB backup")
+    parser.add_argument("--apply", action="store_true", help="Store/repair eligible fingerprints after creating a DB backup")
     parser.add_argument("--limit", type=int, default=None, help="Process only the first N MP3 files")
     parser.add_argument("--db", type=Path, default=None, help="Optional SQLite database path")
     parser.add_argument("--report-dir", type=Path, default=None)
