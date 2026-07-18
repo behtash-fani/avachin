@@ -15,14 +15,14 @@ echo Avachin - BULK LOCAL INDEX APPLY
 echo.
 echo This creates a timestamped SQLite backup, then fingerprints only MP3 files
 echo with trustworthy Title and Artist tags. Identical audio is skipped.
-echo Decoder-damaged files may use a validated temporary re-encoded copy.
+echo Decoder-damaged files may use a validated temporary analysis copy.
 echo The original music files are never renamed, moved, retagged, or modified.
 echo.
 
 if not "%~1"=="" (
-    py tools\avachin_resilient_bulk_index_launcher.py --root "%~1" --apply
+    py tools\avachin_bulk_index.py --root "%~1" --apply
 ) else (
-    py tools\avachin_resilient_bulk_index_launcher.py --apply
+    py tools\avachin_bulk_index.py --apply
 )
 set EXIT_CODE=%ERRORLEVEL%
 

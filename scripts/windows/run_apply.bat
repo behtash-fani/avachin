@@ -15,23 +15,24 @@ if not exist "config.json" (
 )
 
 echo.
-echo Avachin v12.0 - LOCAL-FIRST PARTIAL-AUDIO SAFE APPLY
+echo Avachin v12.1 - LOCAL-FIRST SAFE APPLY
 echo Select the ROOT of your complete music library.
 echo.
 echo The program will:
 echo   1. Check full tracks and mid-song clips against the local database first
-echo   2. Save and segment-index trusted online results locally
-echo   3. Identify all tracks first
-echo   4. Build the final Artist\Album structure
-echo   5. Use crash-safe transactions and a live journal
-echo   6. Keep cover/lyrics/cue/playlist sidecars with albums
-echo   7. Create a complete undo manifest outside the library
-echo   8. Use AcoustID and AudD only for audio still unknown locally
-echo   9. Protect real AudD requests with the local request budget
+echo   2. Use validated temporary analysis copies for decoder-damaged audio
+echo   3. Save and segment-index trusted online results locally
+echo   4. Identify all tracks before changing the library
+echo   5. Build the final Artist\Album structure
+echo   6. Use crash-safe transactions and a live journal
+echo   7. Keep cover, lyrics, cue, and playlist sidecars with albums
+echo   8. Create a complete undo manifest outside the library
+echo   9. Use AcoustID and AudD only for audio still unknown locally
+echo  10. Protect real AudD requests with the local request budget
 echo.
 echo No per-file confirmation will be requested.
 echo.
-py tools\avachin_partial_fingerprint_launcher.py --apply
+py tools\avachin_runtime.py --apply
 set EXIT_CODE=%ERRORLEVEL%
 echo.
 if not "%EXIT_CODE%"=="0" echo Finished with exit code %EXIT_CODE%.
