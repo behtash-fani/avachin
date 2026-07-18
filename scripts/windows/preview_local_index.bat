@@ -16,12 +16,13 @@ echo.
 echo This scans an already-organized MP3 library and reports which files have
 echo trustworthy Title and Artist tags. No fingerprint is stored and no music
 echo file is changed.
+echo Decoder-damaged files can use a validated temporary analysis copy during Apply.
 echo.
 
 if not "%~1"=="" (
-    py tools\bulk_index_library.py --root "%~1"
+    py tools\avachin_resilient_bulk_index_launcher.py --root "%~1"
 ) else (
-    py tools\bulk_index_library.py
+    py tools\avachin_resilient_bulk_index_launcher.py
 )
 set EXIT_CODE=%ERRORLEVEL%
 

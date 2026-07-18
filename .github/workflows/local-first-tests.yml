@@ -30,12 +30,14 @@ jobs:
 
       - name: Compile changed Python files
         run: |
+          python -m py_compile tools/audio_repair.py
           python -m py_compile tools/audd_usage_guard.py
           python -m py_compile tools/avachin_audd_budget_launcher.py
           python -m py_compile tools/avachin_launcher.py
           python -m py_compile tools/avachin_local_first_launcher.py
           python -m py_compile tools/avachin_online_auto_learn_launcher.py
           python -m py_compile tools/avachin_partial_fingerprint_launcher.py
+          python -m py_compile tools/avachin_resilient_bulk_index_launcher.py
           python -m py_compile tools/bulk_index_library.py
           python -m py_compile tools/create_mid_song_test_clip.py
           python -m py_compile tools/create_unknown_test_copy.py
@@ -45,6 +47,7 @@ jobs:
           python -m py_compile tools/partial_fingerprint_library.py
           python -m py_compile tools/partial_fingerprint_store.py
           python -m py_compile tools/summarize_preview_fingerprints.py
+          python -m py_compile tests/test_audio_repair.py
           python -m py_compile tests/test_audd_budget_guard.py
           python -m py_compile tests/test_bulk_index_library.py
           python -m py_compile tests/test_create_unknown_test_copy.py
@@ -54,7 +57,10 @@ jobs:
           python -m py_compile tests/test_partial_fingerprint_v3.py
           python -m py_compile tests/test_preview_fingerprint_summary.py
 
-      - name: Run regression tests
+      - name: Run audio repair tests
+        run: python tests/test_audio_repair.py
+
+      - name: Run existing regression tests
         run: |
           python tests/test_audd_budget_guard.py
           python tests/test_bulk_index_library.py
