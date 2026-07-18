@@ -16,7 +16,7 @@ if not exist "config.json" (
 
 for /f "usebackq delims=" %%V in (`py -c "from tools.version import AVACHIN_VERSION; print(AVACHIN_VERSION)"`) do set AVACHIN_VERSION=%%V
 
- echo.
+echo.
 echo Avachin v%AVACHIN_VERSION% - LOCAL-FIRST SAFE PREVIEW
 echo Select the ROOT of your complete music library.
 echo.
