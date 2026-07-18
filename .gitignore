@@ -28,6 +28,7 @@ Conflicts/
 
 benchmark/manifest.json
 benchmark/generated-manifest.json
+benchmark/review.json
 benchmark/references/local/
 benchmark/generated/
 
