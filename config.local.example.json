@@ -2,6 +2,13 @@
   "local_fingerprint_library_enabled": true,
   "local_fingerprint_match_threshold": 86.0,
   "local_fingerprint_duration_tolerance_seconds": 8.0,
+  "local_fingerprint_partial_enabled": true,
+  "local_fingerprint_partial_threshold": 84.0,
+  "local_fingerprint_partial_min_margin": 2.0,
+  "local_fingerprint_partial_min_clip_seconds": 12.0,
+  "local_fingerprint_partial_max_candidates": 30000,
+  "trust_single_track_local_fingerprint_album": true,
+
   "online_auto_learn_enabled": true,
   "online_auto_learn_require_uncertain_input": true,
   "online_auto_learn_acoustic_min_confidence": 94.0,
@@ -15,6 +22,7 @@
     "spotify",
     "deezer"
   ],
+
   "acoustid_api_key": "",
   "acoustid_api_key_env": "ACOUSTID_API_KEY",
   "audd_api_token": "",
@@ -27,6 +35,7 @@
   "fingerprint_identification_enabled": true,
   "fingerprint_when_uncertain": true,
   "fingerprint_min_score": 0.72,
+
   "audio_repair_enabled": true,
   "audio_repair_only_on_decode_error": true,
   "audio_repair_ffmpeg_path": "",
@@ -36,6 +45,7 @@
   "audio_repair_keep_temporary_files": false,
   "audio_repair_log_console": true,
   "audio_repair_temp_dir": "",
+
   "audd_cache_days": 30,
   "audd_request_timeout_seconds": 45,
   "audd_request_budget_enabled": true,
