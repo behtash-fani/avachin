@@ -50,6 +50,28 @@ class BenchmarkMetricTests(unittest.TestCase):
             }
         )
 
+    def single_manifest(self) -> BenchmarkManifest:
+        return BenchmarkManifest.from_mapping(
+            {
+                "schema_version": 1,
+                "name": "Single metric test",
+                "seed": 11,
+                "references": [
+                    {
+                        "recording_id": "studio",
+                        "path": "references/studio.mp3",
+                        "title": "Pedar",
+                        "artist": "Shahrokh",
+                        "duration_seconds": 200,
+                        "identifiers": {"avachin": "101"},
+                    }
+                ],
+                "transforms": [
+                    {"transform_id": "clean", "kind": "identity"}
+                ],
+            }
+        )
+
     def detection(
         self,
         source: Path,
@@ -57,11 +79,16 @@ class BenchmarkMetricTests(unittest.TestCase):
         *,
         decision: str = "LOCAL_MATCH",
         query_seconds: float = 0.1,
+        external_identifiers: dict[str, str] | None = None,
     ) -> dict[str, object]:
         external = (
-            {"avachin_recording": recording_id}
-            if recording_id is not None
-            else {}
+            dict(external_identifiers)
+            if external_identifiers is not None
+            else (
+                {"avachin_recording": recording_id}
+                if recording_id is not None
+                else {}
+            )
         )
         return {
             "source_path": str(source),
@@ -110,6 +137,50 @@ class BenchmarkMetricTests(unittest.TestCase):
         self.assertEqual(summary["false_auto_apply"], 1)
         self.assertFalse(summary["gate_false_auto_apply_zero"])
         self.assertEqual(summary["query_seconds_p50"], 0.2)
+
+    def test_disjoint_stable_namespaces_use_unique_exact_text(self) -> None:
+        manifest = self.single_manifest()
+        sample = generated_samples(manifest)[0]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            report = {
+                "detections": [
+                    self.detection(
+                        root / sample.path,
+                        None,
+                        external_identifiers={"isrc": "ABC123"},
+                    )
+                ]
+            }
+            rows = evaluate_detections(
+                manifest=manifest,
+                samples=[sample],
+                detection_report=report,
+                corpus_root=root,
+            )
+        self.assertTrue(rows[0].correct)
+        self.assertFalse(rows[0].false_auto_apply)
+        self.assertIn("isrc:abc123", rows[0].predicted_identity_keys)
+        self.assertIn("text:shahrokh|pedar", rows[0].predicted_identity_keys)
+
+    def test_comparable_stable_mismatch_is_not_rescued_by_text(self) -> None:
+        manifest = self.single_manifest()
+        sample = generated_samples(manifest)[0]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            report = {
+                "detections": [
+                    self.detection(root / sample.path, "wrong-recording")
+                ]
+            }
+            rows = evaluate_detections(
+                manifest=manifest,
+                samples=[sample],
+                detection_report=report,
+                corpus_root=root,
+            )
+        self.assertFalse(rows[0].correct)
+        self.assertTrue(rows[0].false_auto_apply)
 
     def test_ambiguous_text_only_does_not_pass_hard_negative_identity(self) -> None:
         manifest = self.manifest()
