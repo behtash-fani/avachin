@@ -34,6 +34,10 @@ def _score(value: object) -> float | None:
         return None
 
 
+def _identity_namespace(value: str) -> str:
+    return value.split(":", 1)[0].casefold() if ":" in value else ""
+
+
 def predicted_identity_keys(detection: Mapping[str, Any]) -> tuple[str, ...]:
     evidence = detection.get("evidence")
     if not isinstance(evidence, Mapping):
@@ -41,7 +45,7 @@ def predicted_identity_keys(detection: Mapping[str, Any]) -> tuple[str, ...]:
     external = evidence.get("external_identifiers")
     if not isinstance(external, Mapping):
         external = {}
-    stable_keys: list[str] = []
+    keys: list[str] = []
     prefixes = {
         "avachin_recording": "avachin",
         "isrc": "isrc",
@@ -52,12 +56,59 @@ def predicted_identity_keys(detection: Mapping[str, Any]) -> tuple[str, ...]:
     for field, prefix in prefixes.items():
         value = str(external.get(field) or "").strip()
         if value:
-            stable_keys.append(normalize_identity_key(f"{prefix}:{value}"))
-    stable_keys = list(dict.fromkeys(key for key in stable_keys if key))
-    if stable_keys:
-        return tuple(stable_keys)
+            keys.append(normalize_identity_key(f"{prefix}:{value}"))
     text_key = text_identity_key(detection.get("artist"), detection.get("title"))
-    return (text_key,) if text_key else ()
+    if text_key:
+        keys.append(text_key)
+    return tuple(dict.fromkeys(key for key in keys if key))
+
+
+def identity_keys_match(
+    expected_keys: Sequence[str],
+    predicted_keys: Sequence[str],
+    *,
+    ambiguous_identity_keys: Sequence[str] = (),
+) -> bool:
+    """Compare stable IDs when comparable, otherwise use unique text identity.
+
+    A stable identifier mismatch is definitive only when both sides expose the
+    same namespace (for example, both have an ISRC or both have an Avachin
+    recording ID). When the namespaces are disjoint, the identifiers are not
+    comparable, so an unambiguous exact artist/title key may be used instead.
+    """
+
+    expected = tuple(normalize_identity_key(key) for key in expected_keys if key)
+    predicted = tuple(normalize_identity_key(key) for key in predicted_keys if key)
+    expected_stable: dict[str, set[str]] = {}
+    predicted_stable: dict[str, set[str]] = {}
+    for key in expected:
+        namespace = _identity_namespace(key)
+        if namespace and namespace != "text":
+            expected_stable.setdefault(namespace, set()).add(key)
+    for key in predicted:
+        namespace = _identity_namespace(key)
+        if namespace and namespace != "text":
+            predicted_stable.setdefault(namespace, set()).add(key)
+
+    comparable_namespaces = set(expected_stable).intersection(predicted_stable)
+    if comparable_namespaces:
+        return any(
+            expected_stable[namespace].intersection(predicted_stable[namespace])
+            for namespace in comparable_namespaces
+        )
+
+    ambiguous = {
+        normalize_identity_key(key)
+        for key in ambiguous_identity_keys
+        if normalize_identity_key(key)
+    }
+    expected_text = {
+        key for key in expected if _identity_namespace(key) == "text" and key not in ambiguous
+    }
+    predicted_text = {
+        key for key in predicted if _identity_namespace(key) == "text" and key not in ambiguous
+    }
+    return bool(expected_text.intersection(predicted_text))
 
 
 @dataclass(frozen=True)
@@ -112,13 +163,18 @@ def evaluate_detections(
             detection_by_path[path_key(source)] = raw
 
     owners = manifest.identity_owner_map()
+    ambiguous_identity_keys = manifest.ambiguous_identity_keys()
     rows: list[EvaluationRow] = []
     for sample in samples:
         sample_path = (Path(corpus_root).resolve() / sample.path).resolve()
         detection = detection_by_path.get(path_key(sample_path), {})
         predicted_keys = predicted_identity_keys(detection)
         expected_keys = tuple(sample.expected_identity_keys)
-        correct = bool(set(expected_keys).intersection(predicted_keys))
+        correct = identity_keys_match(
+            expected_keys,
+            predicted_keys,
+            ambiguous_identity_keys=ambiguous_identity_keys,
+        )
         predicted_recording_id = ""
         for key in predicted_keys:
             owner = owners.get(key)
