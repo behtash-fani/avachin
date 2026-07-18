@@ -35,11 +35,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          passed=0
           for test_file in tests/test_*.py; do
-            echo "::group::${test_file}"
-            python "${test_file}"
-            echo "::endgroup::"
+            log_file="${RUNNER_TEMP}/$(basename "${test_file}").log"
+            if python "${test_file}" >"${log_file}" 2>&1; then
+              passed=$((passed + 1))
+              echo "PASS ${test_file}"
+            else
+              echo "::error title=Regression test failed::${test_file}"
+              echo "----- ${test_file} output -----"
+              cat "${log_file}"
+              exit 1
+            fi
           done
+          echo "Regression summary: ${passed} isolated test files passed."
 
       - name: Run P5-08 acceptance baseline
         run: python tools/run_acceptance.py --report-dir reports/acceptance
