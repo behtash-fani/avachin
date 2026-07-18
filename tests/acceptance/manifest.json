@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "name": "Avachin P5-08 acceptance baseline",
+  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget and frontend-contract acceptance scenarios.",
+  "scenarios": [
+    {
+      "id": "local-first-unknown",
+      "title": "Unknown copy and local-first resolution",
+      "category": "local-first",
+      "description": "Verifies Unknown test-copy creation, local fingerprint precedence and preview fingerprint summaries.",
+      "test_files": [
+        "tests/test_create_unknown_test_copy.py",
+        "tests/test_local_first_launcher.py",
+        "tests/test_preview_fingerprint_summary.py"
+      ]
+    },
+    {
+      "id": "recording-schema-v2",
+      "title": "Recording-centric fingerprint schema",
+      "category": "identity",
+      "description": "Verifies recordings, physical audio files, fingerprints, identifiers and migrations remain separate and repeatable.",
+      "test_files": [
+        "tests/test_fingerprint_schema_v2.py"
+      ]
+    },
+    {
+      "id": "online-to-offline-learning",
+      "title": "Trusted online result becomes local knowledge",
+      "category": "never-forget",
+      "description": "Verifies trusted online identification is learned locally and reused without another online resolution.",
+      "test_files": [
+        "tests/test_online_auto_learn_launcher.py"
+      ]
+    },
+    {
+      "id": "partial-mid-song",
+      "title": "Partial and mid-song fingerprint recognition",
+      "category": "audio",
+      "description": "Verifies overlapping fingerprint segments and conservative partial-match behavior.",
+      "test_files": [
+        "tests/test_partial_fingerprint_v3.py"
+      ]
+    },
+    {
+      "id": "bulk-index-duplicate-safety",
+      "title": "Bulk indexing and duplicate audio safety",
+      "category": "indexing",
+      "description": "Verifies incremental bulk indexing, backups, duplicate protection, reports and file-level isolation.",
+      "test_files": [
+        "tests/test_bulk_index_library.py"
+      ]
+    },
+    {
+      "id": "audd-budget",
+      "title": "AudD request budget guard",
+      "category": "provider-safety",
+      "description": "Verifies only real outbound attempts consume the persistent AudD budget and ledger failures are fail-closed.",
+      "test_files": [
+        "tests/test_audd_budget_guard.py"
+      ]
+    },
+    {
+      "id": "audio-repair-no-original-change",
+      "title": "Fail-safe temporary audio repair",
+      "category": "file-safety",
+      "description": "Verifies decoder repair uses a validated temporary copy, preserves the original and isolates per-file failures.",
+      "test_files": [
+        "tests/test_audio_repair.py"
+      ]
+    },
+    {
+      "id": "status-contract",
+      "title": "Secret-free runtime status contract",
+      "category": "frontend-contract",
+      "description": "Verifies versioned status output, read-only database inspection and credential redaction.",
+      "test_files": [
+        "tests/test_status_api.py"
+      ]
+    },
+    {
+      "id": "operation-contract",
+      "title": "Structured operation events and cancellation",
+      "category": "frontend-contract",
+      "description": "Verifies process isolation, lifecycle/progress/artifact events, cancellation and accurate zero-count summaries.",
+      "test_files": [
+        "tests/test_operation_api.py",
+        "tests/test_operation_event_classification.py"
+      ]
+    },
+    {
+      "id": "public-entrypoints",
+      "title": "Canonical public entry points",
+      "category": "architecture",
+      "description": "Verifies scripts, status, operations and Windows launchers use stable public facades and one version source.",
+      "test_files": [
+        "tests/test_public_entrypoints.py"
+      ]
+    }
+  ]
+}

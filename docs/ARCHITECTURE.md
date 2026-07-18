@@ -10,6 +10,8 @@
 
 `tools/avachin_operation.py` is the stable frontend execution facade. Its larger subprocess implementation lives in `tools/_avachin_operation_core.py`; the facade normalizes terminal summaries into accurate versioned events and prevents zero-valued counters from becoming false warning/error events.
 
+`tools/run_acceptance.py` is the stable P5-08 acceptance facade. It consumes the versioned manifest under `tests/acceptance/`, runs each scenario in isolated Python processes, protects declared fixture paths by hash and size, and writes machine-readable JSON/CSV reports.
+
 Internal feature launchers remain separate so each behavior can be tested and rolled back independently:
 
 ```text
@@ -76,6 +78,14 @@ Repair publishes structured events for future GUI progress views. Listener error
 ## Apply safety
 
 The organizer identifies and plans the complete run before changing the library. Apply operations use a journal, avoid overwriting existing files, produce reports, and write an undo manifest outside the selected music folder.
+
+## Acceptance baseline
+
+The acceptance manifest maps the previously independent regression tests into product-level scenarios for Unknown/local-first resolution, recording identity, online-to-offline learning, partial fingerprinting, bulk indexing and duplicate handling, AudD budget protection, temporary repair, status output, and operation events.
+
+Each test file still runs in its own subprocess. This preserves the existing CI isolation guarantee and prevents monkey-patches or module state from leaking between scenarios. Reports include Avachin version, Git commit, Python/platform details, scenario timing, exit codes, captured output, missing fixture paths, and protected-file mutations.
+
+Public CI fixtures are generated or mocked. Real Windows audio fixtures remain machine-local and can be attached through a local manifest that declares `required_paths` and `protected_paths` without committing copyrighted audio or credentials.
 
 ## Configuration boundaries
 
