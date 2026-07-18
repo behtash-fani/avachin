@@ -41,6 +41,14 @@ py tools\avachin_operation.py bulk-index-apply --root "C:\Music"
 
 The operation API emits one versioned JSON object per line. Zero-valued summary counters are emitted as normal `summary` events rather than false warnings/errors. The implementation runs in a child process so frontend crashes, listener failures, cancellation, or one operation failure do not corrupt the frontend process.
 
+Repeatable acceptance baseline:
+
+```powershell
+py tools\run_acceptance.py
+```
+
+The P5-08 runner executes the local-first, recording schema, online-to-offline learning, partial fingerprint, bulk index, duplicate, AudD budget, audio repair, status, operation, and public-entrypoint scenarios in isolated Python processes. It writes `acceptance-report.json` and `acceptance-report.csv` under `reports/acceptance/` and can fail a scenario when a protected fixture changes hash or size.
+
 Windows launchers are available in `scripts/windows/`:
 
 - `run_preview.bat`
@@ -49,6 +57,7 @@ Windows launchers are available in `scripts/windows/`:
 - `apply_local_index.bat`
 - `status.bat`
 - `audd_quota_status.bat`
+- `run_acceptance.bat`
 
 The older `avachin_*_launcher.py` files are internal feature layers retained for compatibility. New callers should use the canonical entry points above.
 
@@ -80,7 +89,7 @@ smart_music_organizer.py     Core organizer engine
 tools/                       Runtime layers, fingerprint storage, repair, diagnostics
 scripts/windows/             User-facing Windows launchers
 reference_data/              Curated artist and track registries
-tests/                       Regression tests
+tests/                       Regression and acceptance tests
 .github/workflows/           Continuous integration
 ```
 
@@ -91,10 +100,11 @@ See `docs/ARCHITECTURE.md` for runtime and data-flow details.
 ```powershell
 py -m compileall -q smart_music_organizer.py configure.py tools tests
 Get-ChildItem tests\test_*.py | ForEach-Object { py $_.FullName }
+py tools\run_acceptance.py
 ```
 
-All tests run in isolated Python processes in CI to prevent runtime monkey-patch state from leaking between test modules.
+All tests run in isolated Python processes in CI to prevent runtime monkey-patch state from leaking between test modules. The acceptance reports are uploaded as a CI artifact even when a scenario fails.
 
 ## Current version
 
-The public version is stored only in `tools/version.py`.
+The public version is stored only in `tools/version.py`. Avachin v12.4 adds the P5-08 repeatable acceptance corpus and one-command JSON/CSV reporting baseline.
