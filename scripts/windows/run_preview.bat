@@ -15,7 +15,7 @@ if not exist "config.json" (
 )
 
 echo.
-echo Avachin v12.1 - LOCAL-FIRST SAFE PREVIEW
+echo Avachin v12.2 - LOCAL-FIRST SAFE PREVIEW
 echo Select the ROOT of your complete music library.
 echo.
 echo This run performs identification and planning, then writes a report.
