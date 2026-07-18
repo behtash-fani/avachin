@@ -22,12 +22,23 @@ py tools\avachin_bulk_index.py --root "C:\Users\name\Music"
 py tools\avachin_bulk_index.py --root "C:\Users\name\Music" --apply
 ```
 
+Machine-readable runtime status:
+
+```powershell
+py tools\avachin_status.py
+py tools\avachin_status.py --json
+py tools\avachin_status.py --json --compact
+```
+
+The status API reports tool availability, fingerprint database counts, configured provider readiness, audio-repair readiness, and the local AudD budget without returning credentials. Existing SQLite databases are opened read-only.
+
 Windows launchers are available in `scripts/windows/`:
 
 - `run_preview.bat`
 - `run_apply.bat`
 - `preview_local_index.bat`
 - `apply_local_index.bat`
+- `status.bat`
 - `audd_quota_status.bat`
 
 The older `avachin_*_launcher.py` files are internal feature layers retained for compatibility. New callers should use the canonical entry points above.
