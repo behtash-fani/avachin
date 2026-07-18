@@ -32,6 +32,16 @@ py tools\avachin_status.py --json --compact
 
 The status API reports tool availability, fingerprint database counts, configured provider readiness, audio-repair readiness, and the local AudD budget without returning credentials. Existing SQLite databases are opened read-only.
 
+Structured operation events for desktop/mobile-facing adapters:
+
+```powershell
+py tools\avachin_operation.py organizer-preview --root "C:\Users\name\Music"
+py tools\avachin_operation.py organizer-apply --root "C:\Users\name\Music"
+py tools\avachin_operation.py bulk-index-preview --root "C:\Users\name\Music"
+```
+
+`avachin_operation.py` keeps the organizer in an isolated child process and emits one versioned JSON object per line. Events include start, phase, progress, report artifacts, repair notices, warnings, failure, cancellation, and completion. GUI code may also import `OperationRunner`, pass a listener, and cancel through a `threading.Event`.
+
 Windows launchers are available in `scripts/windows/`:
 
 - `run_preview.bat`
