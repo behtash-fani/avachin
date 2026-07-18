@@ -19,9 +19,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from tools.benchmark_bootstrap import bootstrap_manifest  # noqa: E402
 from tools.benchmark_contract import (  # noqa: E402
     BenchmarkManifest,
-    GeneratedSample,
     generated_samples,
     write_generated_manifest,
 )
@@ -167,6 +167,25 @@ def _rows_from_report(payload: Mapping[str, Any]) -> list[EvaluationRow]:
     return result
 
 
+def command_bootstrap(args: argparse.Namespace) -> dict[str, Any]:
+    if args.db:
+        db_path = Path(args.db).expanduser().resolve()
+    else:
+        from tools.local_fingerprint_library import local_db_path
+
+        db_path = local_db_path().resolve()
+    corpus_root = Path(args.corpus_root).expanduser().resolve()
+    return bootstrap_manifest(
+        db_path=db_path,
+        corpus_root=corpus_root,
+        output_manifest=Path(args.output_manifest).expanduser(),
+        limit=int(args.limit),
+        minimum_duration_seconds=float(args.minimum_duration),
+        validation_percent=int(args.validation_percent),
+        seed=int(args.seed),
+    )
+
+
 def command_validate(args: argparse.Namespace) -> dict[str, Any]:
     manifest = BenchmarkManifest.load(Path(args.manifest))
     hard_groups = sorted(
@@ -186,6 +205,7 @@ def command_validate(args: argparse.Namespace) -> dict[str, Any]:
         "planned_samples": len(manifest.references) * len(manifest.transforms),
         "hard_negative_groups": hard_groups,
         "identity_keys": len(manifest.identity_owner_map()),
+        "ambiguous_identity_keys": list(manifest.ambiguous_identity_keys()),
     }
 
 
@@ -273,6 +293,18 @@ def parser() -> argparse.ArgumentParser:
     )
     commands = root.add_subparsers(dest="command", required=True)
 
+    bootstrap = commands.add_parser(
+        "bootstrap",
+        help="Copy trusted references from the local fingerprint DB into a reviewable corpus.",
+    )
+    bootstrap.add_argument("--db")
+    bootstrap.add_argument("--corpus-root", default=str(PROJECT_ROOT / "benchmark"))
+    bootstrap.add_argument("--output-manifest", default=str(DEFAULT_MANIFEST))
+    bootstrap.add_argument("--limit", type=int, default=100)
+    bootstrap.add_argument("--minimum-duration", type=float, default=20.0)
+    bootstrap.add_argument("--validation-percent", type=int, default=80)
+    bootstrap.add_argument("--seed", type=int, default=20260718)
+
     validate = commands.add_parser("validate", help="Validate the trusted reference manifest.")
     validate.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
 
@@ -309,7 +341,9 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "validate":
+        if args.command == "bootstrap":
+            result = command_bootstrap(args)
+        elif args.command == "validate":
             result = command_validate(args)
         elif args.command == "generate":
             result = command_generate(args)
