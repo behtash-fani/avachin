@@ -4,8 +4,10 @@ setlocal
 set PYTHONUTF8=1
 cd /d "%~dp0..\.."
 
+for /f "delims=" %%V in ('py -c "from tools.version import AVACHIN_VERSION; print(AVACHIN_VERSION)"') do set AVACHIN_VERSION=%%V
+
 echo.
-echo Avachin v12.2 - RUNTIME STATUS
+echo Avachin v%AVACHIN_VERSION% - RUNTIME STATUS
 echo.
 py tools\avachin_status.py
 set EXIT_CODE=%ERRORLEVEL%
