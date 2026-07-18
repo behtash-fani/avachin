@@ -157,6 +157,23 @@ def _pipeline_report(
     return payload
 
 
+def _write_pipeline_report(
+    *,
+    run_dir: Path,
+    artifacts: dict[str, str],
+    **kwargs: Any,
+) -> dict[str, Any]:
+    path = run_dir / "pipeline-report.json"
+    artifacts["pipeline_report"] = str(path)
+    payload = _pipeline_report(
+        run_dir=run_dir,
+        artifacts=artifacts,
+        **kwargs,
+    )
+    _atomic_json(path, payload)
+    return payload
+
+
 def run_pipeline(
     *,
     corpus_root: Path,
@@ -180,7 +197,9 @@ def run_pipeline(
 ) -> dict[str, Any]:
     corpus_root = Path(corpus_root).expanduser().resolve()
     corpus_root.mkdir(parents=True, exist_ok=True)
-    manifest_path = Path(manifest_path or corpus_root / "manifest.json").expanduser().resolve()
+    manifest_path = Path(
+        manifest_path or corpus_root / "manifest.json"
+    ).expanduser().resolve()
     report_root = Path(
         report_root or PROJECT_ROOT / "reports" / "benchmark"
     ).expanduser().resolve()
@@ -204,11 +223,13 @@ def run_pipeline(
 
     should_bootstrap = refresh_corpus or not manifest_path.is_file()
     if should_bootstrap:
-        if manifest_path.exists() and not refresh_corpus:
-            raise FileExistsError(manifest_path)
         announce("bootstrap", "started")
         bootstrap_result = bootstrap_manifest(
-            db_path=Path(db_path).expanduser().resolve() if db_path else _default_db_path(),
+            db_path=(
+                Path(db_path).expanduser().resolve()
+                if db_path
+                else _default_db_path()
+            ),
             corpus_root=corpus_root,
             output_manifest=manifest_path,
             limit=int(limit),
@@ -244,7 +265,9 @@ def run_pipeline(
     needs_ffmpeg = any(item.kind != "identity" for item in manifest.transforms)
     ffmpeg_path = ffmpeg or shutil.which("ffmpeg")
     if needs_ffmpeg and not ffmpeg_path:
-        raise FileNotFoundError("ffmpeg was not found; transformed benchmark samples cannot be generated")
+        raise FileNotFoundError(
+            "ffmpeg was not found; transformed benchmark samples cannot be generated"
+        )
     announce("generate", "started", samples=len(samples))
     materialized = materializer(
         samples=samples,
@@ -257,7 +280,6 @@ def run_pipeline(
     announce("generate", "completed", materialized=len(materialized))
 
     detection_report_path: Path | None = None
-    operation_events: list[dict[str, Any]] = []
     runner = operation_runner or OperationRunner()
     request = OperationRequest(
         operation="organizer-preview",
@@ -274,10 +296,10 @@ def run_pipeline(
         root=str(generated_root),
     )
     with event_log_path.open("w", encoding="utf-8", newline="") as event_stream:
+
         def listener(event: OperationEvent) -> None:
             nonlocal detection_report_path
             payload = event.to_dict()
-            operation_events.append(payload)
             event_stream.write(json.dumps(payload, ensure_ascii=False) + "\n")
             event_stream.flush()
             if (
@@ -302,47 +324,42 @@ def run_pipeline(
     artifacts["operation_events"] = str(event_log_path)
     announce("preview", operation_result.get("status", "unknown"), **operation_result)
 
+    common_report_args = {
+        "corpus_root": corpus_root,
+        "manifest_path": manifest_path,
+        "generated_manifest_path": generated_manifest_path,
+        "generated_root": generated_root,
+        "operation": operation_result,
+        "artifacts": artifacts,
+        "stages": stages,
+    }
     if operation_result.get("status") != "completed":
-        payload = _pipeline_report(
+        return _write_pipeline_report(
             status="failed",
             run_dir=run_dir,
-            corpus_root=corpus_root,
-            manifest_path=manifest_path,
-            generated_manifest_path=generated_manifest_path,
-            generated_root=generated_root,
-            operation=operation_result,
             benchmark_summary=None,
             calibration=None,
-            artifacts=artifacts,
-            stages=stages,
             error="organizer Preview did not complete",
+            **common_report_args,
         )
-        _atomic_json(run_dir / "pipeline-report.json", payload)
-        return payload
 
     if detection_report_path is None or not detection_report_path.is_file():
-        payload = _pipeline_report(
+        return _write_pipeline_report(
             status="failed",
             run_dir=run_dir,
-            corpus_root=corpus_root,
-            manifest_path=manifest_path,
-            generated_manifest_path=generated_manifest_path,
-            generated_root=generated_root,
-            operation=operation_result,
             benchmark_summary=None,
             calibration=None,
-            artifacts=artifacts,
-            stages=stages,
             error="Preview completed without a detection-report.json artifact",
+            **common_report_args,
         )
-        _atomic_json(run_dir / "pipeline-report.json", payload)
-        return payload
 
     detection_copy = run_dir / "detection-report.json"
     shutil.copy2(detection_report_path, detection_copy)
     artifacts["detection_report"] = str(detection_copy)
     detection_csv = detection_report_path.with_suffix(".csv")
-    copied_csv = _copy_if_present(detection_csv, run_dir / "detection-report.csv")
+    copied_csv = _copy_if_present(
+        detection_csv, run_dir / "detection-report.csv"
+    )
     if copied_csv:
         artifacts["detection_csv"] = copied_csv
 
@@ -370,47 +387,55 @@ def run_pipeline(
         configuration=configuration,
     )
     benchmark_json = _atomic_json(run_dir / "benchmark-report.json", report)
-    benchmark_csv = _write_evaluation_csv(run_dir / "benchmark-report.csv", rows)
+    benchmark_csv = _write_evaluation_csv(
+        run_dir / "benchmark-report.csv", rows
+    )
     artifacts["benchmark_json"] = str(benchmark_json)
     artifacts["benchmark_csv"] = str(benchmark_csv)
     announce("evaluate", "completed", **report["summary"])
 
     announce("calibrate", "started")
-    best, safe_profiles = calibrate(rows)
-    threshold_payload = calibration_report(
-        best,
-        safe_profiles,
-        avachin_version=AVACHIN_VERSION,
-        git_commit=git_commit(),
+    calibration_summary: dict[str, Any]
+    try:
+        best, safe_profiles = calibrate(rows)
+        threshold_payload = calibration_report(
+            best,
+            safe_profiles,
+            avachin_version=AVACHIN_VERSION,
+            git_commit=git_commit(),
+        )
+        calibration_summary = dict(threshold_payload["best"])
+        announce(
+            "calibrate",
+            "completed",
+            safe_profile_count=len(safe_profiles),
+            best=best.to_dict(),
+        )
+    except RuntimeError as exc:
+        threshold_payload = {
+            "schema_version": 1,
+            "status": "no-safe-profile",
+            "avachin_version": AVACHIN_VERSION,
+            "git_commit": git_commit(),
+            "error": str(exc),
+            "selection_rule": "No profile with zero False Auto-Apply was found.",
+        }
+        calibration_summary = dict(threshold_payload)
+        announce("calibrate", "failed", error=str(exc))
+    threshold_json = _atomic_json(
+        run_dir / "threshold-profile.json", threshold_payload
     )
-    threshold_json = _atomic_json(run_dir / "threshold-profile.json", threshold_payload)
     artifacts["threshold_profile"] = str(threshold_json)
-    announce(
-        "calibrate",
-        "completed",
-        safe_profile_count=len(safe_profiles),
-        best=best.to_dict(),
-    )
 
     gate_passed = bool(report["summary"]["gate_false_auto_apply_zero"])
     status = "passed" if gate_passed else "gate-failed"
-    payload = _pipeline_report(
+    return _write_pipeline_report(
         status=status,
         run_dir=run_dir,
-        corpus_root=corpus_root,
-        manifest_path=manifest_path,
-        generated_manifest_path=generated_manifest_path,
-        generated_root=generated_root,
-        operation=operation_result,
         benchmark_summary=report["summary"],
-        calibration=threshold_payload["best"],
-        artifacts=artifacts,
-        stages=stages,
+        calibration=calibration_summary,
+        **common_report_args,
     )
-    pipeline_json = _atomic_json(run_dir / "pipeline-report.json", payload)
-    payload["artifacts"]["pipeline_report"] = str(pipeline_json)
-    _atomic_json(pipeline_json, payload)
-    return payload
 
 
 def _default_db_path() -> Path:
