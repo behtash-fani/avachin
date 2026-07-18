@@ -63,6 +63,13 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertIn("acceptance corpus", completed.stdout.casefold())
         self.assertIn("json/csv", completed.stdout.casefold())
 
+    def test_backup_restore_help_runs(self) -> None:
+        completed = self.run_python("tools/avachin_backup.py", "--help")
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("back up or safely restore", completed.stdout.casefold())
+        self.assertIn("backup", completed.stdout.casefold())
+        self.assertIn("restore", completed.stdout.casefold())
+
     def test_windows_launchers_use_only_canonical_entrypoints(self) -> None:
         preview = (PROJECT_ROOT / "scripts" / "windows" / "run_preview.bat").read_text(encoding="utf-8")
         apply = (PROJECT_ROOT / "scripts" / "windows" / "run_apply.bat").read_text(encoding="utf-8")
@@ -70,6 +77,8 @@ class PublicEntrypointTests(unittest.TestCase):
         bulk_apply = (PROJECT_ROOT / "scripts" / "windows" / "apply_local_index.bat").read_text(encoding="utf-8")
         status = (PROJECT_ROOT / "scripts" / "windows" / "status.bat").read_text(encoding="utf-8")
         acceptance = (PROJECT_ROOT / "scripts" / "windows" / "run_acceptance.bat").read_text(encoding="utf-8")
+        backup = (PROJECT_ROOT / "scripts" / "windows" / "backup.bat").read_text(encoding="utf-8")
+        restore = (PROJECT_ROOT / "scripts" / "windows" / "restore_dry_run.bat").read_text(encoding="utf-8")
 
         self.assertIn("tools\\avachin_runtime.py", preview)
         self.assertIn("tools\\avachin_runtime.py --apply", apply)
@@ -77,6 +86,10 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertIn("tools\\avachin_bulk_index.py", bulk_apply)
         self.assertIn("tools\\avachin_status.py", status)
         self.assertIn("tools\\run_acceptance.py", acceptance)
+        self.assertIn("tools\\avachin_backup.py backup", backup)
+        self.assertIn("tools\\avachin_backup.py restore", restore)
+        self.assertIn("--dry-run", restore)
+        self.assertNotIn("--apply", restore)
         for launcher in (preview, apply, status):
             self.assertIn("from tools.version import AVACHIN_VERSION", launcher)
             self.assertIn("v%AVACHIN_VERSION%", launcher)
@@ -97,6 +110,7 @@ class PublicEntrypointTests(unittest.TestCase):
         self.assertEqual(len(scenario_ids), len(set(scenario_ids)))
         self.assertIn("operation-contract", scenario_ids)
         self.assertIn("audio-repair-no-original-change", scenario_ids)
+        self.assertIn("backup-restore-sandbox", scenario_ids)
 
 
 if __name__ == "__main__":
