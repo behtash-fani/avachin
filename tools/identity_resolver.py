@@ -196,8 +196,16 @@ def _segment_coverage(
     )
 
 
-def _external_ids(candidate: Any) -> dict[str, str]:
+def _external_ids(
+    candidate: Any,
+    runtime_evidence: Mapping[str, Any],
+) -> dict[str, str]:
+    avachin_recording = (
+        runtime_evidence.get("local_fingerprint_recording_id")
+        or runtime_evidence.get("online_auto_learn_recording_id")
+    )
     values = {
+        "avachin_recording": avachin_recording,
         "isrc": getattr(candidate, "isrc", None),
         "musicbrainz_recording": getattr(
             candidate,
@@ -334,7 +342,7 @@ def resolve_candidate(
             "duration": round(duration_agreement, 2),
         },
         consensus_sources=consensus,
-        external_identifiers=_external_ids(candidate),
+        external_identifiers=_external_ids(candidate, runtime_evidence),
         flags=tuple(flags),
     )
     valid_identity = bool(

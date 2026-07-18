@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +23,7 @@ from tools.detection_report import (
 from tools.identity_resolver import resolve_candidate
 
 app = previous.app
-LAUNCHER_VERSION = "12.6"
+LAUNCHER_VERSION = "12.7"
 
 _ORIGINAL_DETERMINE_CANDIDATE = getattr(
     app.determine_candidate,
@@ -35,6 +36,7 @@ _ORIGINAL_WRITE_CSV = getattr(
     app.write_csv,
 )
 _DETECTIONS: dict[str, DetectionResult] = {}
+_QUERY_TIMINGS: dict[str, float] = {}
 _DETECTIONS_LOCK = threading.RLock()
 
 
@@ -135,6 +137,7 @@ def _determine_candidate_with_detection_contract(
     unknown_artist_folder: str,
     fpcalc_path: Path | None = None,
 ) -> tuple[Any, list[str]]:
+    started = time.perf_counter()
     candidate, errors = _ORIGINAL_DETERMINE_CANDIDATE(
         source,
         audio,
@@ -148,7 +151,16 @@ def _determine_candidate_with_detection_contract(
         unknown_artist_folder,
         fpcalc_path,
     )
+    query_seconds = round(time.perf_counter() - started, 6)
+    key = canonical_source_key(source)
     errors = list(errors or [])
+    evidence = getattr(candidate, "evidence", None)
+    if not isinstance(evidence, dict):
+        evidence = {}
+        candidate.evidence = evidence
+    evidence["detection_query_seconds"] = query_seconds
+    with _DETECTIONS_LOCK:
+        _QUERY_TIMINGS[key] = query_seconds
     try:
         attach_detection_contract(
             source=source,
@@ -159,17 +171,13 @@ def _determine_candidate_with_detection_contract(
         )
     except Exception as exc:
         detection = _fallback_detection(source, candidate)
-        evidence = getattr(candidate, "evidence", None)
-        if not isinstance(evidence, dict):
-            evidence = {}
-            candidate.evidence = evidence
         evidence["detection_result"] = detection.to_dict()
         evidence["detection_decision"] = detection.decision.value
         evidence["detection_reason"] = detection.decision_reason
         evidence["detection_safe_to_apply"] = False
         evidence["detection_contract_error"] = str(exc)[:500]
         with _DETECTIONS_LOCK:
-            _DETECTIONS[canonical_source_key(source)] = detection
+            _DETECTIONS[key] = detection
         errors.append(f"Detection contract warning: {exc}")
     return candidate, errors
 
@@ -181,17 +189,20 @@ def _write_csv_with_detection_reports(
     _ORIGINAL_WRITE_CSV(path, results)
     with _DETECTIONS_LOCK:
         snapshot = dict(_DETECTIONS)
+        timing_snapshot = dict(_QUERY_TIMINGS)
     json_path, csv_path, _ = write_detection_reports(
         Path(path).parent,
         results,
         snapshot,
         avachin_version=str(app.APP_VERSION),
+        query_timings=timing_snapshot,
     )
     print(f"JSON summary: {json_path}")
     print(f"CSV report: {csv_path}")
     with _DETECTIONS_LOCK:
         for key in snapshot:
             _DETECTIONS.pop(key, None)
+            _QUERY_TIMINGS.pop(key, None)
 
 
 setattr(

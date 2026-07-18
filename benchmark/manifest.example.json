@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "name": "Avachin local validation corpus",
+  "seed": 20260718,
+  "references": [
+    {
+      "recording_id": "example-song-studio",
+      "path": "references/local/example-song-studio.mp3",
+      "title": "Example Song",
+      "artist": "Example Artist",
+      "duration_seconds": 210.0,
+      "split": "validation",
+      "version": "studio",
+      "hard_negative_group": "example-song-versions",
+      "identifiers": {
+        "avachin": "replace-with-studio-recording-id"
+      }
+    },
+    {
+      "recording_id": "example-song-live",
+      "path": "references/local/example-song-live.mp3",
+      "title": "Example Song",
+      "artist": "Example Artist",
+      "duration_seconds": 235.0,
+      "split": "validation",
+      "version": "live",
+      "hard_negative_group": "example-song-versions",
+      "identifiers": {
+        "avachin": "replace-with-live-recording-id"
+      }
+    }
+  ],
+  "transforms": [
+    {
+      "transform_id": "clean",
+      "kind": "identity"
+    },
+    {
+      "transform_id": "clip-middle-5",
+      "kind": "clip",
+      "parameters": {
+        "duration_seconds": 5,
+        "position": "middle"
+      }
+    },
+    {
+      "transform_id": "clip-middle-10",
+      "kind": "clip",
+      "parameters": {
+        "duration_seconds": 10,
+        "position": "middle"
+      }
+    },
+    {
+      "transform_id": "clip-middle-15",
+      "kind": "clip",
+      "parameters": {
+        "duration_seconds": 15,
+        "position": "middle"
+      }
+    },
+    {
+      "transform_id": "bitrate-64",
+      "kind": "bitrate",
+      "parameters": {
+        "bitrate_kbps": 64
+      }
+    },
+    {
+      "transform_id": "bitrate-128",
+      "kind": "bitrate",
+      "parameters": {
+        "bitrate_kbps": 128
+      }
+    },
+    {
+      "transform_id": "bitrate-320",
+      "kind": "bitrate",
+      "parameters": {
+        "bitrate_kbps": 320
+      }
+    },
+    {
+      "transform_id": "trim-head-tail",
+      "kind": "trim",
+      "parameters": {
+        "head_seconds": 8,
+        "tail_seconds": 8
+      }
+    },
+    {
+      "transform_id": "leading-silence-2",
+      "kind": "silence",
+      "parameters": {
+        "leading_seconds": 2
+      }
+    },
+    {
+      "transform_id": "white-noise",
+      "kind": "noise",
+      "parameters": {
+        "color": "white",
+        "amplitude": 0.015
+      }
+    },
+    {
+      "transform_id": "volume-minus-6db",
+      "kind": "volume",
+      "parameters": {
+        "decibels": -6
+      }
+    }
+  ]
+}
