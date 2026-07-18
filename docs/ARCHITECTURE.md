@@ -6,6 +6,8 @@
 
 `tools/avachin_bulk_index.py` is the canonical bulk fingerprint-index entry point. It enables fail-safe temporary audio repair before delegating to the bulk indexer.
 
+`tools/avachin_status.py` is the machine-readable diagnostics boundary for desktop, mobile-facing adapters, and packaging. It returns a versioned JSON document and never returns provider credentials.
+
 Internal feature launchers remain separate so each behavior can be tested and rolled back independently:
 
 ```text
@@ -18,6 +20,19 @@ avachin_launcher.py
 ```
 
 These internal names are implementation details. GUI, mobile-facing adapters, packaging, and Windows scripts should call only the canonical runtimes.
+
+## Status and diagnostics
+
+The status API is safe to call before an operation starts. It exposes:
+
+- public Avachin version and status-schema version;
+- Python, `fpcalc`, and FFmpeg availability;
+- provider enabled/configured booleans without credential values;
+- fingerprint database schema and row counts;
+- AudD budget usage and remaining requests;
+- readiness flags and non-fatal warnings.
+
+Existing fingerprint and provider-usage databases are opened in SQLite read-only mode. A status check does not create, migrate, or update either database.
 
 ## Identification order
 
