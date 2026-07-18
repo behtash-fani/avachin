@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Avachin v12.0 runtime for local-first recognition and guarded AudD fallback.
+"""Avachin v12.1 runtime for resilient local-first recognition.
 
 Full-track Local-first matching stays first. If it misses, the runtime compares
 the query against overlapping Schema V3 fingerprint segments before any online
 provider is allowed to run. Trusted online learning also indexes segments for
 future clip recognition. Real AudD HTTP attempts are protected by a persistent
-local request budget.
+local request budget. Decoder-damaged audio may be fingerprinted through a
+validated temporary repair copy; the original media file is never modified.
 """
 
 from __future__ import annotations
@@ -20,12 +21,18 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import tools.avachin_audd_budget_launcher as auto_learn  # noqa: E402
+from tools import audio_repair  # noqa: E402
 from tools import partial_fingerprint_store as partial_store  # noqa: E402
 
 app = auto_learn.app
 base_launcher = auto_learn.local_first.launcher
 fingerprint_library = auto_learn.fingerprint_library
-LAUNCHER_VERSION = "12.0"
+LAUNCHER_VERSION = "12.1"
+
+# The shared module is also used by full-track, partial-track, and online
+# auto-learning paths, so one idempotent installation covers the complete
+# runtime without changing any caller API.
+audio_repair.install_fingerprint_repair_runtime(fingerprint_library)
 
 _ORIGINAL_IDENTIFY_BY_LOCAL = getattr(
     base_launcher._identify_by_local_fingerprint,
