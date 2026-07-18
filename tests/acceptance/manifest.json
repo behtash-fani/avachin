@@ -97,10 +97,21 @@
       ]
     },
     {
+      "id": "explainable-detection-contract",
+      "title": "Explainable DetectionResult and four-way decision policy",
+      "category": "identity",
+      "description": "Verifies separate audio/metadata/identity confidence, normalized evidence, exactly one decision, runtime attachment and JSON/CSV reports.",
+      "test_files": [
+        "tests/test_detection_contract.py",
+        "tests/test_detection_report.py",
+        "tests/test_detection_launcher.py"
+      ]
+    },
+    {
       "id": "public-entrypoints",
       "title": "Canonical public entry points",
       "category": "architecture",
-      "description": "Verifies scripts, status, operations, backup/restore and Windows launchers use stable public facades and one version source.",
+      "description": "Verifies scripts, status, operations, backup/restore, DetectionResult and Windows launchers use stable public facades and one version source.",
       "test_files": [
         "tests/test_public_entrypoints.py"
       ]
