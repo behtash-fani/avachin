@@ -57,9 +57,11 @@ jobs:
           python -m py_compile tests/test_partial_fingerprint_v3.py
           python -m py_compile tests/test_preview_fingerprint_summary.py
 
-      - name: Run regression tests
+      - name: Run audio repair tests
+        run: python tests/test_audio_repair.py
+
+      - name: Run existing regression tests
         run: |
-          python tests/test_audio_repair.py
           python tests/test_audd_budget_guard.py
           python tests/test_bulk_index_library.py
           python tests/test_create_unknown_test_copy.py
