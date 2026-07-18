@@ -18,10 +18,10 @@ SQLite files are copied with SQLite's online backup API. WAL, SHM, and journal s
 py tools\avachin_backup.py backup
 ```
 
-The default destination is:
+The default destination uses a collision-safe timestamp:
 
 ```text
-%LOCALAPPDATA%\SmartMusicOrganizer\backups\avachin-backup-YYYYMMDD-HHMMSS.zip
+%LOCALAPPDATA%\SmartMusicOrganizer\backups\avachin-backup-YYYYMMDD-HHMMSS-microseconds.zip
 ```
 
 Choose another ZIP path when needed:
