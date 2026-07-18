@@ -40,3 +40,14 @@ jobs:
             python "${test_file}"
             echo "::endgroup::"
           done
+
+      - name: Run P5-08 acceptance baseline
+        run: python tools/run_acceptance.py --report-dir reports/acceptance
+
+      - name: Upload acceptance reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: avachin-acceptance-report
+          path: reports/acceptance/
+          if-no-files-found: warn
