@@ -26,5 +26,10 @@ organized/
 Review/
 Conflicts/
 
+benchmark/manifest.json
+benchmark/generated-manifest.json
+benchmark/references/local/
+benchmark/generated/
+
 .DS_Store
 Thumbs.db
