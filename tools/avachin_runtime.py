@@ -15,7 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-import tools.avachin_partial_fingerprint_launcher as runtime  # noqa: E402
+import tools.avachin_detection_launcher as runtime  # noqa: E402
 from tools.version import AVACHIN_VERSION  # noqa: E402
 
 app = runtime.app
