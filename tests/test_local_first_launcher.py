@@ -29,12 +29,17 @@ class LocalFirstLauncherTests(unittest.TestCase):
         return SimpleNamespace(tags=SimpleNamespace(album=album))
 
     @staticmethod
-    def candidate(source: str = "local_fingerprint"):
+    def candidate(
+        source: str = "local_fingerprint",
+        *,
+        title: str = "Baazi",
+        album: str = "Baazi",
+    ):
         return runtime.app.Candidate(
             source=source,
-            title="Baazi",
+            title=title,
             artist="Siavash Ghomayshi",
-            album="Baazi",
+            album=album,
             album_artist="Siavash Ghomayshi",
             confidence=96.0,
             title_similarity=100.0,
@@ -116,12 +121,54 @@ class LocalFirstLauncherTests(unittest.TestCase):
         self.assertEqual(received["args"][0], Path("unknown.mp3"))
         self.assertFalse(received["args"][8])
 
+    def test_safe_local_fingerprint_album_is_trusted_for_single_file_scan(self) -> None:
+        candidate = self.candidate(title="Asheghaaneh Tanhaast", album="Baaraan Toee")
+        trusted, reason = runtime._album_is_trusted_with_local_fingerprint(
+            "Baaraan Toee",
+            candidate,
+            SimpleNamespace(tracknumber=None),
+            1,
+            {},
+        )
+        self.assertTrue(trusted)
+        self.assertEqual(reason, "trusted-local-fingerprint-album")
+        self.assertTrue(candidate.evidence["local_fingerprint_album_trusted"])
+
+    def test_title_like_local_fingerprint_album_remains_single(self) -> None:
+        candidate = self.candidate(title="Baazi", album="Baazi")
+        trusted, reason = runtime._album_is_trusted_with_local_fingerprint(
+            "Baazi",
+            candidate,
+            SimpleNamespace(tracknumber=None),
+            1,
+            {},
+        )
+        self.assertFalse(trusted)
+        self.assertEqual(reason, "album-title-matches-track-title")
+
+    def test_local_fingerprint_album_trust_can_be_disabled(self) -> None:
+        candidate = self.candidate(title="Asheghaaneh Tanhaast", album="Baaraan Toee")
+        trusted, reason = runtime._album_is_trusted_with_local_fingerprint(
+            "Baaraan Toee",
+            candidate,
+            SimpleNamespace(tracknumber=None),
+            1,
+            {"trust_single_track_local_fingerprint_album": False},
+        )
+        self.assertFalse(trusted)
+        self.assertEqual(reason, "not-enough-album-evidence")
+
     def test_installation_is_idempotent(self) -> None:
         installed = runtime.app.determine_candidate
+        album_gate = runtime.app.album_is_trusted_for_folder
         runtime.install_local_first_runtime()
         runtime.install_local_first_runtime()
         self.assertIs(runtime.app.determine_candidate, installed)
+        self.assertIs(runtime.app.album_is_trusted_for_folder, album_gate)
         self.assertTrue(getattr(installed, "__avachin_local_first__", False))
+        self.assertTrue(
+            getattr(album_gate, "__avachin_local_fingerprint_album_trust__", False)
+        )
 
 
 if __name__ == "__main__":
