@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "Avachin repeatable acceptance baseline",
-  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget, recovery and frontend-contract acceptance scenarios.",
+  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget, recovery, benchmark and frontend-contract acceptance scenarios.",
   "scenarios": [
     {
       "id": "local-first-unknown",
@@ -108,10 +108,25 @@
       ]
     },
     {
+      "id": "official-benchmark-framework",
+      "title": "Reference corpus, transforms, metrics and zero-false calibration",
+      "category": "benchmark",
+      "description": "Verifies safe corpus bootstrap, hard-negative identity isolation, deterministic transforms, Precision/Recall metrics, query timing and zero-False-Auto-Apply threshold calibration.",
+      "test_files": [
+        "tests/test_benchmark_bootstrap.py",
+        "tests/test_benchmark_contract.py",
+        "tests/test_benchmark_transforms.py",
+        "tests/test_benchmark_detection_identity.py",
+        "tests/test_benchmark_metrics.py",
+        "tests/test_benchmark_thresholds.py",
+        "tests/test_benchmark_cli.py"
+      ]
+    },
+    {
       "id": "public-entrypoints",
       "title": "Canonical public entry points",
       "category": "architecture",
-      "description": "Verifies scripts, status, operations, backup/restore, DetectionResult and Windows launchers use stable public facades and one version source.",
+      "description": "Verifies scripts, status, operations, recovery, DetectionResult, benchmark and Windows launchers use stable public facades and one version source.",
       "test_files": [
         "tests/test_public_entrypoints.py"
       ]
