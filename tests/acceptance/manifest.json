@@ -119,7 +119,8 @@
         "tests/test_benchmark_detection_identity.py",
         "tests/test_benchmark_metrics.py",
         "tests/test_benchmark_thresholds.py",
-        "tests/test_benchmark_cli.py"
+        "tests/test_benchmark_cli.py",
+        "tests/test_detection_query_timing.py"
       ]
     },
     {
