@@ -629,21 +629,34 @@ def _parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args, extra_args = _parser().parse_known_args()
-    request = OperationRequest(
-        operation=args.operation,
-        root=str(args.root),
-        copy_to=str(args.copy_to or ""),
-        offline=bool(args.offline),
-        workers=args.workers,
-        min_confidence=args.min_confidence,
-        normalize_persian=bool(args.normalize_persian),
-        id3_version=args.id3_version,
-        bulk_limit=args.limit,
-        bulk_db=str(args.db or ""),
-        report_dir=str(args.report_dir or ""),
-        progress_every=args.progress_every,
-        extra_args=tuple(extra_args),
-    ).normalized()
+    try:
+        request = OperationRequest(
+            operation=args.operation,
+            root=str(args.root),
+            copy_to=str(args.copy_to or ""),
+            offline=bool(args.offline),
+            workers=args.workers,
+            min_confidence=args.min_confidence,
+            normalize_persian=bool(args.normalize_persian),
+            id3_version=args.id3_version,
+            bulk_limit=args.limit,
+            bulk_db=str(args.db or ""),
+            report_dir=str(args.report_dir or ""),
+            progress_every=args.progress_every,
+            extra_args=tuple(extra_args),
+        ).normalized()
+    except Exception as exc:
+        event = OperationEvent(
+            operation_id=uuid.uuid4().hex,
+            sequence=1,
+            event_type="failed",
+            operation=args.operation,
+            mode="apply" if args.operation.endswith("-apply") else "preview",
+            status="failed",
+            message=f"operation request is invalid: {_safe_message(str(exc))}",
+        )
+        _write_jsonl(event)
+        return 2
 
     if args.print_command:
         print(
@@ -662,15 +675,17 @@ def main() -> int:
     watcher: threading.Thread | None = None
     if args.cancel_file:
         cancel_path = Path(args.cancel_file)
+        if cancel_path.exists():
+            cancel_event.set()
+        else:
+            def watch_cancel_file() -> None:
+                while not cancel_event.wait(0.2):
+                    if cancel_path.exists():
+                        cancel_event.set()
+                        return
 
-        def watch_cancel_file() -> None:
-            while not cancel_event.wait(0.2):
-                if cancel_path.exists():
-                    cancel_event.set()
-                    return
-
-        watcher = threading.Thread(target=watch_cancel_file, daemon=True)
-        watcher.start()
+            watcher = threading.Thread(target=watch_cancel_file, daemon=True)
+            watcher.start()
 
     result = OperationRunner().run(
         request,
