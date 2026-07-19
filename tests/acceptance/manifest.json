@@ -145,6 +145,16 @@
       ]
     },
     {
+      "id": "review-center-audit-undo",
+      "title": "Human Review Center with backup, audit and undo",
+      "category": "identity-safety",
+      "description": "Verifies audio reassignment, rejected-file learning, recording revoke, duplicate merge and Undo update full and partial fingerprint associations without changing any MP3.",
+      "test_files": [
+        "tests/test_review_center.py",
+        "tests/test_review_entrypoints.py"
+      ]
+    },
+    {
       "id": "public-entrypoints",
       "title": "Canonical public entry points",
       "category": "architecture",
