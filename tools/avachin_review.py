@@ -14,7 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from tools import review_service  # noqa: E402
+from tools.review_controller import ReviewController  # noqa: E402
 
 
 def _print(value: Any) -> None:
@@ -23,14 +23,13 @@ def _print(value: Any) -> None:
 
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(
-        description="Review, correct, revoke, merge and undo Avachin local identities safely."
+        description="Review, correct, learn, revoke, merge and undo Avachin local identities safely."
     )
     root.add_argument("--db", type=Path, help="Optional local fingerprint SQLite path")
     commands = root.add_subparsers(dest="command", required=True)
 
     queue = commands.add_parser("queue", help="Show REVIEW/REJECT items from a detection report")
     queue.add_argument("--report", type=Path)
-    queue.add_argument("--report-root", type=Path)
     queue.add_argument("--include-safe", action="store_true")
 
     search = commands.add_parser("search", help="Search local recordings")
@@ -51,6 +50,14 @@ def parser() -> argparse.ArgumentParser:
     reassign.add_argument("--album", default="")
     reassign.add_argument("--reviewer", default="local-user")
     reassign.add_argument("--reason", default="manual identity correction")
+
+    learn = commands.add_parser("learn", help="Learn one manually verified REVIEW/REJECT file")
+    learn.add_argument("--file", type=Path, required=True)
+    learn.add_argument("--artist", required=True)
+    learn.add_argument("--title", required=True)
+    learn.add_argument("--album", default="")
+    learn.add_argument("--reviewer", default="local-user")
+    learn.add_argument("--reason", default="human-approved rejected-file identity")
 
     merge = commands.add_parser("merge", help="Merge a duplicate recording into the correct recording")
     merge.add_argument("--source", required=True)
@@ -74,58 +81,51 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = parser().parse_args()
-    db = args.db
+    controller = ReviewController(db_path=args.db)
     try:
         if args.command == "queue":
-            result = review_service.load_review_queue(
-                args.report,
-                report_root=args.report_root,
-                include_safe=bool(args.include_safe),
-            )
+            result = controller.queue(args.report, include_safe=bool(args.include_safe))
         elif args.command == "search":
-            result = review_service.list_recordings(
-                args.query,
-                status=args.status,
-                limit=args.limit,
-                db_path=db,
-            )
+            result = controller.search(args.query, status=args.status, limit=args.limit)
         elif args.command == "detail":
-            result = review_service.recording_detail(args.recording_id, db_path=db)
+            result = controller.detail(args.recording_id)
         elif args.command == "find-path":
-            result = review_service.find_audio_by_path(args.source_path, db_path=db)
+            result = controller.find_path(args.source_path)
         elif args.command == "reassign":
-            result = review_service.reassign_audio_file(
+            result = controller.reassign(
                 args.audio_file_id,
                 artist=args.artist,
                 title=args.title,
                 album=args.album,
                 reviewer=args.reviewer,
                 reason=args.reason,
-                db_path=db,
+            )
+        elif args.command == "learn":
+            result = controller.learn_rejected_file(
+                args.file,
+                artist=args.artist,
+                title=args.title,
+                album=args.album,
+                reviewer=args.reviewer,
+                reason=args.reason,
             )
         elif args.command == "merge":
-            result = review_service.merge_recordings(
+            result = controller.merge(
                 args.source,
                 args.target,
                 reviewer=args.reviewer,
                 reason=args.reason,
-                db_path=db,
             )
         elif args.command == "revoke":
-            result = review_service.revoke_recording(
+            result = controller.revoke(
                 args.recording_id,
                 reviewer=args.reviewer,
                 reason=args.reason,
-                db_path=db,
             )
         elif args.command == "undo":
-            result = review_service.undo_action(args.action_id, db_path=db)
+            result = controller.undo(args.action_id)
         elif args.command == "history":
-            result = review_service.history(
-                limit=args.limit,
-                include_undone=not args.applied_only,
-                db_path=db,
-            )
+            result = controller.history(limit=args.limit, include_undone=not args.applied_only)
         else:
             raise RuntimeError(f"unsupported command: {args.command}")
     except Exception as exc:
