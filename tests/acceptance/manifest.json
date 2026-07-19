@@ -155,6 +155,16 @@
       ]
     },
     {
+      "id": "review-online-suggestions",
+      "title": "Safe online suggestions for unresolved real files",
+      "category": "provider-safety",
+      "description": "Verifies benchmark artifacts never consume provider quota, real unresolved files use AcoustID then guarded fallbacks, and every online identity remains a non-mutating suggestion until human confirmation.",
+      "test_files": [
+        "tests/test_review_online.py",
+        "tests/test_review_online_entrypoints.py"
+      ]
+    },
+    {
       "id": "public-entrypoints",
       "title": "Canonical public entry points",
       "category": "architecture",
