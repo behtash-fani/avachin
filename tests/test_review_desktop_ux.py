@@ -131,11 +131,11 @@ class ReviewDesktopUXTests(unittest.TestCase):
         self.assertTrue(payload["undo_reopens_rows"])
         self.assertFalse(payload["automatic_learning"])
 
-    def test_windows_launcher_uses_desktop_gui_and_never_apply(self) -> None:
+    def test_windows_launcher_keeps_desktop_features_and_never_apply(self) -> None:
         launcher = (PROJECT_ROOT / "scripts" / "windows" / "review_center.bat").read_text(
             encoding="utf-8"
         ).casefold()
-        self.assertIn("avachin_review_desktop_gui.py", launcher)
+        self.assertIn("avachin_review_alias_gui.py", launcher)
         self.assertIn("clipboard paste", launcher)
         self.assertNotIn("--apply", launcher)
 

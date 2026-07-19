@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "Avachin repeatable acceptance baseline",
-  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget, recovery, benchmark and frontend-contract acceptance scenarios.",
+  "description": "Repeatable local-first, never-forget, partial fingerprint, safety, budget, recovery, benchmark, artist-alias and frontend-contract acceptance scenarios.",
   "scenarios": [
     {
       "id": "local-first-unknown",
@@ -162,6 +162,15 @@
       "test_files": [
         "tests/test_review_online.py",
         "tests/test_review_online_entrypoints.py"
+      ]
+    },
+    {
+      "id": "artist-alias-consolidation",
+      "title": "Local artist aliases and canonical recording identity",
+      "category": "identity-safety",
+      "description": "Verifies spacing and punctuation variants are grouped, consolidated with backup, audit and Undo, future local learning uses the canonical artist, and no online provider or MP3 change occurs.",
+      "test_files": [
+        "tests/test_artist_alias_manager.py"
       ]
     },
     {
