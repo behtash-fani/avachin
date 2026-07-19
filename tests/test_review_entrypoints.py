@@ -38,18 +38,28 @@ class ReviewEntrypointTests(unittest.TestCase):
         self.assertIn("review center", completed.stdout.casefold())
 
     def test_windows_launcher_uses_review_gui_and_never_apply(self) -> None:
-        launcher = (PROJECT_ROOT / "scripts" / "windows" / "review_center.bat").read_text(encoding="utf-8")
+        launcher = (PROJECT_ROOT / "scripts" / "windows" / "review_center.bat").read_text(
+            encoding="utf-8"
+        )
         lowered = launcher.casefold()
-        self.assertIn("tools\\avachin_review_gui.py", lowered)
+        self.assertIn("tools\\avachin_review_online_gui.py", lowered)
         self.assertNotIn("--apply", lowered)
+        self.assertIn("suggestions only", lowered)
         self.assertIn("no music file will be moved", lowered)
 
     def test_gui_uses_controller_instead_of_sqlite(self) -> None:
         gui = (PROJECT_ROOT / "tools" / "avachin_review_gui.py").read_text(encoding="utf-8")
+        online_gui = (PROJECT_ROOT / "tools" / "avachin_review_online_gui.py").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("ReviewController", gui)
+        self.assertIn("OnlineReviewController", online_gui)
         self.assertNotIn("import sqlite3", gui)
+        self.assertNotIn("import sqlite3", online_gui)
         self.assertNotIn("organizer-apply", gui)
         self.assertNotIn("bulk-index-apply", gui)
+        self.assertNotIn("organizer-apply", online_gui)
+        self.assertNotIn("bulk-index-apply", online_gui)
 
 
 if __name__ == "__main__":
