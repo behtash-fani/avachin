@@ -11,14 +11,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
 from typing import Any
 
-from tools.avachin_review_gui import ReviewCenterApp
-from tools.review_online import OnlineReviewController, latest_real_detection_report
-from tools.version import AVACHIN_VERSION
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from tools.avachin_review_gui import ReviewCenterApp  # noqa: E402
+from tools.review_online import OnlineReviewController, latest_real_detection_report  # noqa: E402
+from tools.version import AVACHIN_VERSION  # noqa: E402
 
 
 class OnlineReviewCenterApp(ReviewCenterApp):
