@@ -17,23 +17,30 @@ from tools.version import AVACHIN_VERSION  # noqa: E402
 
 
 class ReviewOnlineEntrypointTests(unittest.TestCase):
-    def test_windows_launcher_uses_online_review_gui(self) -> None:
+    def test_windows_launcher_uses_desktop_review_gui(self) -> None:
         content = (PROJECT_ROOT / "scripts" / "windows" / "review_center.bat").read_text(
             encoding="utf-8"
         )
-        self.assertIn("avachin_review_online_gui.py", content)
+        self.assertIn("avachin_review_desktop_gui.py", content)
         self.assertIn("suggestions only", content.casefold())
+        self.assertIn("clipboard paste", content.casefold())
         self.assertNotIn("--apply", content.casefold())
 
     def test_gui_exposes_online_suggestions_but_not_direct_learning(self) -> None:
-        content = (PROJECT_ROOT / "tools" / "avachin_review_online_gui.py").read_text(
+        online_content = (PROJECT_ROOT / "tools" / "avachin_review_online_gui.py").read_text(
             encoding="utf-8"
         )
-        self.assertIn("Identify selected online", content)
-        self.assertIn("Identify all real items online", content)
-        self.assertIn("Apply verified identity", content)
-        self.assertNotIn("learn_file(", content)
-        self.assertNotIn("sqlite3", content)
+        desktop_content = (PROJECT_ROOT / "tools" / "avachin_review_desktop_gui.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Identify selected online", online_content)
+        self.assertIn("Identify all real items online", online_content)
+        self.assertIn("Apply verified identity", online_content)
+        self.assertIn("manual-pending", desktop_content)
+        self.assertNotIn("learn_file(", online_content)
+        self.assertNotIn("learn_file(", desktop_content)
+        self.assertNotIn("sqlite3", online_content)
+        self.assertNotIn("sqlite3", desktop_content)
 
     def test_resolver_has_benchmark_and_no_auto_learn_guards(self) -> None:
         content = (PROJECT_ROOT / "tools" / "review_online.py").read_text(encoding="utf-8")
@@ -46,7 +53,7 @@ class ReviewOnlineEntrypointTests(unittest.TestCase):
 
     def test_check_mode_is_headless_and_reports_contract(self) -> None:
         completed = subprocess.run(
-            [sys.executable, str(PROJECT_ROOT / "tools" / "avachin_review_online_gui.py"), "--check"],
+            [sys.executable, str(PROJECT_ROOT / "tools" / "avachin_review_desktop_gui.py"), "--check"],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
@@ -58,10 +65,12 @@ class ReviewOnlineEntrypointTests(unittest.TestCase):
         payload = json.loads(completed.stdout)
         self.assertEqual(payload["version"], AVACHIN_VERSION)
         self.assertTrue(payload["online_suggestions_only"])
+        self.assertTrue(payload["clipboard_shortcuts"])
+        self.assertTrue(payload["verified_rows_hidden"])
         self.assertFalse(payload["automatic_learning"])
 
-    def test_public_version_is_12_12(self) -> None:
-        self.assertEqual(AVACHIN_VERSION, "12.12")
+    def test_public_version_is_12_13(self) -> None:
+        self.assertEqual(AVACHIN_VERSION, "12.13")
 
 
 if __name__ == "__main__":
