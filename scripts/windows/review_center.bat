@@ -13,11 +13,12 @@ if errorlevel 1 (
 
 echo.
 echo Avachin Review Center - backup, audit, undo and online suggestions enabled
+echo Clipboard paste and right-click menu enabled.
 echo AcoustID is tried first. AudD is used only when needed and remains budget-protected.
 echo Online results are suggestions only; no identity is learned without confirmation.
 echo No music file will be moved, renamed, retagged or deleted.
 echo.
-py tools\avachin_review_online_gui.py %*
+py tools\avachin_review_desktop_gui.py %*
 set "EXIT_CODE=%ERRORLEVEL%"
 if not "%EXIT_CODE%"=="0" pause
 exit /b %EXIT_CODE%
