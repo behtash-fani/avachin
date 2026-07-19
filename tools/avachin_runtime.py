@@ -15,6 +15,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from tools.artist_alias_runtime import install_artist_alias_hook  # noqa: E402
+
+install_artist_alias_hook()
+
 import tools.avachin_detection_launcher as runtime  # noqa: E402
 from tools.version import AVACHIN_VERSION  # noqa: E402
 
