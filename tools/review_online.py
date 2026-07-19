@@ -75,7 +75,11 @@ def is_benchmark_sample(path: Path | str) -> bool:
 
 
 def _default_report_roots() -> list[Path]:
-    roots = [PROJECT_ROOT / "reports", app.app_data_dir() / "reports"]
+    roots = [
+        PROJECT_ROOT / "reports",
+        app.app_data_dir() / "reports",
+        app.app_data_dir(),
+    ]
     output: list[Path] = []
     seen: set[str] = set()
     for root in roots:
@@ -282,6 +286,13 @@ class OnlineReviewController(ReviewController):
     def queue(self, report_path: Path | str | None = None, *, include_safe: bool = False) -> dict[str, Any]:
         explicit = Path(report_path).expanduser().resolve() if report_path else None
         path = explicit or latest_real_detection_report()
+        if path is None:
+            return {
+                "report_path": "",
+                "summary": {},
+                "items": [],
+                "report_kind": "none",
+            }
         result = review_service.load_review_queue(path, include_safe=include_safe)
         report = str(result.get("report_path") or "")
         result["report_kind"] = "benchmark" if report and is_benchmark_report(report) else "real"
