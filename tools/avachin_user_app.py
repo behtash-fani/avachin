@@ -14,7 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from tools.persian_ui_app import PersianMaterialApp
+from tools.persian_ui_app_v2 import PersianMaterialAppV2
 from tools.review_online import latest_real_detection_report
 from tools.version import AVACHIN_VERSION
 
@@ -37,6 +37,10 @@ def main() -> int:
             "theme": "dracula-material",
             "preferred_font": "Vazirmatn",
             "font_fallbacks": ["Vazir", "Vazir UI", "Tahoma", "Segoe UI"],
+            "page_vertical_scroll": True,
+            "table_horizontal_scroll": True,
+            "technical_text_dual_axis_scroll": True,
+            "rtl_table_column_order": True,
             "preview_only_organizer": True,
             "organizer_apply_exposed": False,
             "review_queue": True,
@@ -48,7 +52,7 @@ def main() -> int:
         return 0
 
     root = tk.Tk()
-    PersianMaterialApp(root, initial_folder=args.folder, initial_report=args.report)
+    PersianMaterialAppV2(root, initial_folder=args.folder, initial_report=args.report)
     root.mainloop()
     return 0
 
