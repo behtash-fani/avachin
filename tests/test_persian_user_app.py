@@ -12,13 +12,15 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UI_FILES = (
     "tools/avachin_user_app.py",
-    "tools/persian_ui_app.py",
-    "tools/persian_ui_base.py",
+    "tools/persian_ui_app_v2.py",
+    "tools/persian_ui_base_v2.py",
     "tools/persian_ui_common.py",
-    "tools/persian_ui_home.py",
-    "tools/persian_ui_review.py",
-    "tools/persian_ui_alias.py",
-    "tools/persian_ui_history.py",
+    "tools/persian_ui_widgets.py",
+    "tools/persian_ui_textbox.py",
+    "tools/persian_ui_home_v2.py",
+    "tools/persian_ui_review_v2.py",
+    "tools/persian_ui_alias_v2.py",
+    "tools/persian_ui_history_v2.py",
 )
 
 
@@ -35,11 +37,15 @@ class PersianUserAppTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         payload = json.loads(completed.stdout)
-        self.assertEqual(payload["version"], "12.15")
+        self.assertEqual(payload["version"], "12.16")
         self.assertEqual(payload["language"], "fa")
         self.assertTrue(payload["right_to_left"])
         self.assertEqual(payload["theme"], "dracula-material")
         self.assertEqual(payload["preferred_font"], "Vazirmatn")
+        self.assertTrue(payload["page_vertical_scroll"])
+        self.assertTrue(payload["table_horizontal_scroll"])
+        self.assertTrue(payload["technical_text_dual_axis_scroll"])
+        self.assertTrue(payload["rtl_table_column_order"])
         self.assertTrue(payload["preview_only_organizer"])
         self.assertFalse(payload["organizer_apply_exposed"])
         self.assertTrue(payload["review_queue"])
@@ -65,6 +71,28 @@ class PersianUserAppTests(unittest.TestCase):
         self.assertIn('anchor="e"', source)
         self.assertIn('justify="right"', source)
         self.assertIn('side="right"', source)
+
+    def test_pages_and_large_content_are_scrollable(self) -> None:
+        base = (PROJECT_ROOT / "tools" / "persian_ui_base_v2.py").read_text(encoding="utf-8")
+        widgets = (PROJECT_ROOT / "tools" / "persian_ui_widgets.py").read_text(encoding="utf-8")
+        textbox = (PROJECT_ROOT / "tools" / "persian_ui_textbox.py").read_text(encoding="utf-8")
+        self.assertIn("ScrollablePage", base)
+        self.assertIn("<MouseWheel>", base)
+        self.assertIn('orient="horizontal"', widgets)
+        self.assertIn('orient="vertical"', widgets)
+        self.assertIn('orient="horizontal"', textbox)
+        self.assertIn('orient="vertical"', textbox)
+
+    def test_tables_use_rtl_display_order_and_ltr_technical_columns(self) -> None:
+        review = (PROJECT_ROOT / "tools" / "persian_ui_review_v2.py").read_text(encoding="utf-8")
+        aliases = (PROJECT_ROOT / "tools" / "persian_ui_alias_v2.py").read_text(encoding="utf-8")
+        history = (PROJECT_ROOT / "tools" / "persian_ui_history_v2.py").read_text(encoding="utf-8")
+        self.assertIn('displaycolumns=("path", "provider", "confidence", "title", "artist", "decision")', review)
+        self.assertIn('"path": "w"', review)
+        self.assertIn('displaycolumns=("audio", "recordings", "variants", "canonical")', aliases)
+        self.assertIn('displaycolumns=("id", "created", "reason", "type", "status")', history)
+        self.assertIn('"created": "w"', history)
+        self.assertIn('"id": "w"', history)
 
     def test_gui_never_exposes_organizer_apply_or_direct_sqlite(self) -> None:
         for path in UI_FILES:
