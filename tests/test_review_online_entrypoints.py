@@ -73,8 +73,8 @@ class ReviewOnlineEntrypointTests(unittest.TestCase):
         self.assertEqual(payload["network_requests"], 0)
         self.assertFalse(payload["music_files_changed"])
 
-    def test_public_version_is_12_14(self) -> None:
-        self.assertEqual(AVACHIN_VERSION, "12.14")
+    def test_public_version_is_12_15(self) -> None:
+        self.assertEqual(AVACHIN_VERSION, "12.15")
 
 
 if __name__ == "__main__":
